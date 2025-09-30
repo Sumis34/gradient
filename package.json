@@ -20,6 +20,8 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@supabase/supabase-js": "^2.58.0",
     "@tabler/icons-react": "^3.35.0",
+    "@tanstack/react-db": "^0.1.23",
+    "@tanstack/rxdb-db-collection": "^0.1.12",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -27,6 +29,7 @@
     "next": "15.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "rxdb": "^16.19.1",
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {

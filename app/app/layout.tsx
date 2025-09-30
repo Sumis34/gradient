@@ -1,11 +1,20 @@
+"use client";
 import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import ClientOnly from "@/components/client-only";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { useCollections } from "@/hooks/use-collections";
 
 export default function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { isLoading } = useCollections();
+
   return (
     <>
       <SidebarProvider>
@@ -16,9 +25,15 @@ export default function Layout({
               <SidebarTrigger className="sm:hidden" />
             </div>
           </header>
+          {isLoading ? (
+            <div className="flex flex-1 items-center justify-center">
+              <p>Loading...</p>
+            </div>
+          ) : (
+            children
+          )}
         </SidebarInset>
       </SidebarProvider>
-      {children}
     </>
   );
 }

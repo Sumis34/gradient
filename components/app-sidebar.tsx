@@ -137,8 +137,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <NavFooter
         user={{
           name: user?.user_metadata?.name || "Guest User",
-          email: user?.email || "guest@example.com",
-          avatar: user?.user_metadata?.avatar || "/avatar-01.png",
+          email: user?.email || "",
+          avatar: user?.user_metadata?.avatar_url,
         }}
       />
     </Sidebar>
