@@ -4,21 +4,28 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { CollectionsContext } from "./context";
 import { initCollections, type AppCollections } from "./collections";
+import { startReplication } from "./replication";
 
 export function DatabaseProvider({ children }: { children: ReactNode }) {
   const [collections, setCollections] = useState<AppCollections | null>(null);
 
   useEffect(() => {
     let mounted = true;
-    initCollections().then((cols) => {
+
+    (async () => {
+      const cols = await initCollections();
       if (mounted) setCollections(cols);
-    });
+
+      // fire replication only after DB + collections are ready
+      await startReplication();
+    })().catch((err) => console.error("DB init failed", err));
+
     return () => {
       mounted = false;
     };
   }, []);
 
-  if (!collections) return null; // could render <Loader/>
+  if (!collections) return null; // TODO loader
 
   return (
     <CollectionsContext.Provider value={collections}>

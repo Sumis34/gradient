@@ -27,8 +27,21 @@ export type GradeDoc = {
 
 export type GradeCollection = RxCollection<GradeDoc>;
 
+export type SubjectDoc = {
+  id: string;
+  created_at?: string;
+  name: string;
+  description?: string;
+  user_id: string;
+  updated_at?: string;
+  _deleted?: boolean;
+};
+
+export type SubjectCollection = RxCollection<SubjectDoc>;
+
 export type GradientDatabase = RxDatabase<{
   grades: GradeCollection;
+  subjects: SubjectCollection;
 }>;
 
 // ---- Schema ----
@@ -50,6 +63,23 @@ const gradeSchema = {
   required: ["id", "user_id", "subject_id", "grade", "date"],
 } as const;
 
+const subjectSchema = {
+  title: "subjects",
+  version: 0,
+  type: "object",
+  primaryKey: "id",
+  properties: {
+    id: { type: "string", maxLength: 100 },
+    created_at: { type: "string", format: "date-time" },
+    name: { type: "string" },
+    description: { type: "string" },
+    user_id: { type: "string", maxLength: 100 },
+    updated_at: { type: "string", format: "date-time" },
+    _deleted: { type: "boolean" },
+  },
+  required: ["id", "name", "user_id"],
+} as const;
+
 let dbPromise: Promise<GradientDatabase> | null = null;
 
 export async function initDB(): Promise<GradientDatabase> {
@@ -64,6 +94,7 @@ export async function initDB(): Promise<GradientDatabase> {
 
       await db.addCollections({
         grades: { schema: gradeSchema },
+        subjects: { schema: subjectSchema },
       });
 
       return db;

@@ -3,10 +3,11 @@
 
 import { createCollection, type Collection } from "@tanstack/react-db";
 import { rxdbCollectionOptions } from "@tanstack/rxdb-db-collection";
-import { initDB, type GradeDoc } from "./rxdb";
+import { initDB, SubjectDoc, type GradeDoc } from "./rxdb";
 
 export type AppCollections = {
   grades: Collection<GradeDoc, string>;
+  subjects: Collection<SubjectDoc, string>;
 };
 
 let collectionsPromise: Promise<AppCollections> | null = null;
@@ -23,7 +24,14 @@ export async function initCollections(): Promise<AppCollections> {
         })
       );
 
-      return { grades };
+      const subjects: Collection<SubjectDoc, string> = createCollection(
+        rxdbCollectionOptions<SubjectDoc>({
+          rxCollection: db.subjects,
+          startSync: true,
+        })
+      );
+
+      return { grades, subjects };
     })();
   }
   return collectionsPromise;

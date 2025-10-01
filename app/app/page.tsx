@@ -3,11 +3,12 @@
 
 import { useLiveQuery } from "@tanstack/react-db";
 import { useCollections } from "@/lib/local-database/context";
-import type { GradeDoc } from "@/lib/local-database/rxdb";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function AppPage() {
-  const { grades } = useCollections();
+  const { grades, subjects } = useCollections();
+  const { user } = useAuth();
 
   const { data: allGrades = [] } = useLiveQuery((q) =>
     q.from({
@@ -15,8 +16,21 @@ export default function AppPage() {
     })
   );
 
+  const { data: allSubjects = [] } = useLiveQuery((q) =>
+    q.from({
+      subjects: subjects,
+    })
+  );
+
   return (
     <div>
+      <h1>Subjects</h1>
+      {allSubjects.map((s) => (
+        <div key={s.id}>
+          <p>ID: {s.id}</p>
+          <p>Name: {s.name}</p>
+        </div>
+      ))}
       <h1>Grades</h1>
       {allGrades.map((g) => (
         <div key={g.id}>
@@ -32,14 +46,25 @@ export default function AppPage() {
         onClick={() => {
           grades.insert({
             id: crypto.randomUUID(),
-            user_id: "user1",
-            subject_id: "math",
+            user_id: user!.id,
+            subject_id: "496128eb-a35d-4400-b05a-aaea97bb2cfc",
             grade: Math.floor(Math.random() * 100),
             date: new Date().toISOString(),
           });
         }}
       >
         Add
+      </Button>
+      <Button
+        onClick={() => {
+          subjects.insert({
+            id: crypto.randomUUID(),
+            user_id: user!.id,
+            name: "Gugus",
+          });
+        }}
+      >
+        Subject
       </Button>
     </div>
   );
