@@ -6,46 +6,20 @@ import {
   addRxPlugin,
   type RxDatabase,
   type RxCollection,
+  toTypedRxJsonSchema,
+  ExtractDocumentTypeFromTypedRxJsonSchema,
+  RxJsonSchema,
 } from "rxdb/plugins/core";
 import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
 import { wrappedValidateAjvStorage } from "rxdb/plugins/validate-ajv";
 import { RxDBDevModePlugin } from "rxdb/plugins/dev-mode";
 
-addRxPlugin(RxDBDevModePlugin);
-
-// ---- Types ----
-export type GradeDoc = {
-  id: string;
-  created_at?: string;
-  weight?: number;
-  subject_id: string;
-  grade: number;
-  description?: string;
-  date: string;
-  user_id: string;
-};
-
-export type GradeCollection = RxCollection<GradeDoc>;
-
-export type SubjectDoc = {
-  id: string;
-  created_at?: string;
-  name: string;
-  description?: string;
-  user_id: string;
-  updated_at?: string;
-  _deleted?: boolean;
-};
-
-export type SubjectCollection = RxCollection<SubjectDoc>;
-
-export type GradientDatabase = RxDatabase<{
-  grades: GradeCollection;
-  subjects: SubjectCollection;
-}>;
+if (process.env.NODE_ENV === "development") {
+  addRxPlugin(RxDBDevModePlugin);
+}
 
 // ---- Schema ----
-const gradeSchema = {
+const gradesSchemaLiteral = {
   title: "grades",
   version: 0,
   type: "object",
@@ -60,8 +34,17 @@ const gradeSchema = {
     date: { type: "string", format: "date-time" },
     user_id: { type: "string", maxLength: 100 },
   },
-  required: ["id", "user_id", "subject_id", "grade", "date"],
+  required: ["id", "subject_id", "grade", "date"],
 } as const;
+
+const gradesSchemaTyped = toTypedRxJsonSchema(gradesSchemaLiteral);
+
+export type GradesDocType = ExtractDocumentTypeFromTypedRxJsonSchema<
+  typeof gradesSchemaTyped
+>;
+export const gradesSchema: RxJsonSchema<GradesDocType> = gradesSchemaLiteral;
+
+export type GradeCollection = RxCollection<GradesDocType>;
 
 const subjectSchema = {
   title: "subjects",
@@ -77,10 +60,26 @@ const subjectSchema = {
     updated_at: { type: "string", format: "date-time" },
     _deleted: { type: "boolean" },
   },
-  required: ["id", "name", "user_id"],
+  required: ["id", "name"],
 } as const;
 
+const subjectsSchemaTyped = toTypedRxJsonSchema(subjectSchema);
+
+export type SubjectsDocType = ExtractDocumentTypeFromTypedRxJsonSchema<
+  typeof subjectsSchemaTyped
+>;
+
+export const subjectsSchema: RxJsonSchema<SubjectsDocType> =
+  subjectsSchemaTyped;
+
+export type SubjectsCollection = RxCollection<SubjectsDocType>;
+
 let dbPromise: Promise<GradientDatabase> | null = null;
+
+export type GradientDatabase = RxDatabase<{
+  grades: GradeCollection;
+  subjects: SubjectsCollection;
+}>;
 
 export async function initDB(): Promise<GradientDatabase> {
   if (!dbPromise) {
@@ -93,7 +92,7 @@ export async function initDB(): Promise<GradientDatabase> {
       });
 
       await db.addCollections({
-        grades: { schema: gradeSchema },
+        grades: { schema: gradesSchema },
         subjects: { schema: subjectSchema },
       });
 

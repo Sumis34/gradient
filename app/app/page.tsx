@@ -46,7 +46,7 @@ export default function AppPage() {
         onClick={() => {
           grades.insert({
             id: crypto.randomUUID(),
-            user_id: user!.id,
+            user_id: user?.id,
             subject_id: "496128eb-a35d-4400-b05a-aaea97bb2cfc",
             grade: Math.floor(Math.random() * 100),
             date: new Date().toISOString(),
@@ -59,7 +59,7 @@ export default function AppPage() {
         onClick={() => {
           subjects.insert({
             id: crypto.randomUUID(),
-            user_id: user!.id,
+            user_id: user?.id,
             name: "Gugus",
           });
         }}

@@ -3,11 +3,11 @@
 
 import { createCollection, type Collection } from "@tanstack/react-db";
 import { rxdbCollectionOptions } from "@tanstack/rxdb-db-collection";
-import { initDB, SubjectDoc, type GradeDoc } from "./rxdb";
+import { initDB, SubjectsDocType, type GradesDocType } from "./rxdb";
 
 export type AppCollections = {
-  grades: Collection<GradeDoc, string>;
-  subjects: Collection<SubjectDoc, string>;
+  grades: Collection<GradesDocType, string>;
+  subjects: Collection<SubjectsDocType, string>;
 };
 
 let collectionsPromise: Promise<AppCollections> | null = null;
@@ -17,15 +17,15 @@ export async function initCollections(): Promise<AppCollections> {
     collectionsPromise = (async () => {
       const db = await initDB();
 
-      const grades: Collection<GradeDoc, string> = createCollection(
-        rxdbCollectionOptions<GradeDoc>({
+      const grades: Collection<GradesDocType, string> = createCollection(
+        rxdbCollectionOptions<GradesDocType>({
           rxCollection: db.grades,
           startSync: true,
         })
       );
 
-      const subjects: Collection<SubjectDoc, string> = createCollection(
-        rxdbCollectionOptions<SubjectDoc>({
+      const subjects: Collection<SubjectsDocType, string> = createCollection(
+        rxdbCollectionOptions<SubjectsDocType>({
           rxCollection: db.subjects,
           startSync: true,
         })

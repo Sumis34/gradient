@@ -1,7 +1,10 @@
-'use client'
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase/client'; // 
+"use client";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { User, Session } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase/client"; //
+import { enableSync } from "@/lib/local-database/utils";
+import { initDB } from "@/lib/local-database/rxdb";
+import { startReplication } from "@/lib/local-database/replication";
 // Define what data we want to share
 interface AuthContextType {
   user: User | null; // User info (name, email, etc.)
@@ -11,28 +14,40 @@ interface AuthContextType {
   signOut: () => Promise<void>; // Function to sign out
 }
 // Create the context
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null); // Store user info
   const [session, setSession] = useState<Session | null>(null); // Store session info
   const [loading, setLoading] = useState(true); // Track loading state
-// Check if the user is already logged in when the app starts
+  // Check if the user is already logged in when the app starts
   useEffect(() => {
     const initSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
     };
+
     initSession();
+
     // Listen for changes in the user's login state
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+
+      if (event === "SIGNED_IN" && session?.user) {
+        const db = await initDB();
+
+        await enableSync(db, session.user.id);
       }
-    );
+    });
     // Cleanup when the component unmounts
     return () => subscription?.unsubscribe();
   }, []);

@@ -2,7 +2,7 @@
 
 import { replicateSupabase } from "rxdb/plugins/replication-supabase";
 import { supabase } from "@/lib/supabase/client";
-import { initDB } from "./rxdb";
+import { GradientDatabase, initDB } from "./rxdb";
 
 let started = false;
 
@@ -14,11 +14,9 @@ const pullModifier = (doc: any) => {
   return doc;
 };
 
-export async function startReplication() {
+export async function startReplication(db: GradientDatabase) {
   if (started) return;
   started = true;
-
-  const db = await initDB();
 
   const gradesReplication = replicateSupabase({
     tableName: "grades",

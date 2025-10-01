@@ -20,6 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useAuth } from "@/hooks/use-auth";
 import {
   BookmarkPlus,
   CircleHelp,
@@ -40,6 +41,8 @@ export function NavFooter({
     avatar: string;
   };
 }) {
+  const { signOut } = useAuth();
+
   return (
     <SidebarFooter className="p-4">
       <SidebarMenu>
@@ -66,7 +69,7 @@ export function NavFooter({
                     />
                     Settings
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => signOut()}>
                     <LogOut
                       size={16}
                       className="opacity-80"
