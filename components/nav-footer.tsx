@@ -23,7 +23,6 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import {
   BookmarkPlus,
-  CircleHelp,
   LogOut,
   Plus,
   PlusCircle,

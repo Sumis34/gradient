@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import { ChevronDown } from "lucide-react";
 import { FavoriteItem, TeamItem, TopicItem } from "@/components/types";
+import Link from "next/link";
 
 interface NavCollapsibleProps {
   favorites: FavoriteItem[];
@@ -82,8 +83,10 @@ export function NavCollapsible({
                   {semesters.map((item) => {
                     return (
                       <SidebarMenuItem key={item.id}>
-                        <SidebarMenuButton>
-                          {item.name}
+                        <SidebarMenuButton asChild>
+                          <Link href={`/app/semester/${item.id}`}>
+                            {item.name}
+                          </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     );
