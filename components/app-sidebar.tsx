@@ -19,53 +19,11 @@ import { NavHeader } from "@/components/nav-header";
 import { NavMain } from "@/components/nav-main";
 import type { SidebarData } from "./types";
 import { useAuth } from "@/hooks/use-auth";
+import { useCollections } from "@/lib/local-database/context";
+import { useLiveQuery } from "@tanstack/react-db";
 
 const data: SidebarData = {
-  navMain: [
-    {
-      id: "overview",
-      title: "Overview",
-      url: "#",
-      icon: LayoutDashboard,
-      isActive: true,
-    },
-    {
-      id: "tasks",
-      title: "Tasks",
-      url: "#",
-      icon: IconListDetails,
-    },
-    {
-      id: "meetings",
-      title: "Meetings",
-      url: "#",
-      icon: IconCalendarStats,
-    },
-    {
-      id: "notes",
-      title: "Notes",
-      url: "#",
-      icon: IconNotebook,
-    },
-    {
-      id: "calendar",
-      title: "Calendar",
-      url: "#",
-      icon: IconCalendar,
-    },
-    {
-      id: "completed",
-      title: "Completed",
-      url: "#",
-      icon: IconProgressCheck,
-    },
-    {
-      id: "notifications",
-      title: "Notifications",
-      url: "#",
-      icon: IconBellRinging,
-    },
-  ],
+  navMain: [],
   navCollapsible: {
     favorites: [
       {
@@ -122,6 +80,19 @@ const data: SidebarData = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth();
+  const { semesters: semestersCollection } = useCollections();
+
+  const { data: semesters = [] } = useLiveQuery((q) =>
+    q
+      .from({
+        semester: semestersCollection,
+      })
+      .select(({ semester }) => ({
+        id: semester.id,
+        name: semester.name,
+      }))
+      .orderBy(({ semester }) => semester.created_at, "desc")
+  );
 
   return (
     <Sidebar {...props}>
@@ -132,6 +103,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           favorites={data.navCollapsible.favorites}
           teams={data.navCollapsible.teams}
           topics={data.navCollapsible.topics}
+          semesters={semesters}
         />
       </SidebarContent>
       <NavFooter

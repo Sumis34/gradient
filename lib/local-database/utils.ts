@@ -4,6 +4,13 @@ import { GradientDatabase } from "./rxdb";
 async function assignUserId(db: GradientDatabase, userId: string) {
   const grades = await db.grades.find().exec();
   const subjects = await db.subjects.find().exec();
+  const semesters = await db.semesters.find().exec();
+
+  for (const semester of semesters) {
+    if (!semester.user_id) {
+      await semester.patch({ user_id: userId });
+    }
+  }
 
   for (const subject of subjects) {
     if (!subject.user_id) {

@@ -19,12 +19,14 @@ interface NavCollapsibleProps {
   favorites: FavoriteItem[];
   teams: TeamItem[];
   topics: TopicItem[];
+  semesters?: { id: string; name: string }[];
 }
 
 export function NavCollapsible({
   favorites,
   teams,
   topics,
+  semesters,
 }: NavCollapsibleProps) {
   return (
     <div className="space-y-0">
@@ -62,7 +64,7 @@ export function NavCollapsible({
         </Collapsible>
       )}
 
-      {teams && teams.length > 0 && (
+      {semesters && semesters.length > 0 && (
         <Collapsible className="group/collapsible">
           <SidebarGroup>
             <SidebarGroupLabel
@@ -70,53 +72,18 @@ export function NavCollapsible({
               className="text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
             >
               <CollapsibleTrigger>
-                Teams
+                Semesters
                 <ChevronDown className="ml-auto transition-transform group-data-[state=closed]/collapsible:rotate-0 group-data-[state=open]/collapsible:rotate-180" />
               </CollapsibleTrigger>
             </SidebarGroupLabel>
             <CollapsibleContent>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {teams.map((item) => {
-                    const Icon = item.icon;
+                  {semesters.map((item) => {
                     return (
                       <SidebarMenuItem key={item.id}>
                         <SidebarMenuButton>
-                          <Icon className="mr-2 h-4 w-4" />
-                          {item.title}
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </SidebarGroup>
-        </Collapsible>
-      )}
-
-      {topics && topics.length > 0 && (
-        <Collapsible className="group/collapsible">
-          <SidebarGroup>
-            <SidebarGroupLabel
-              asChild
-              className="text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-            >
-              <CollapsibleTrigger>
-                Topics
-                <ChevronDown className="ml-auto transition-transform group-data-[state=closed]/collapsible:rotate-0 group-data-[state=open]/collapsible:rotate-180" />
-              </CollapsibleTrigger>
-            </SidebarGroupLabel>
-            <CollapsibleContent>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {topics.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <SidebarMenuItem key={item.id}>
-                        <SidebarMenuButton>
-                          <Icon className="mr-2 h-4 w-4" />
-                          {item.title}
+                          {item.name}
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     );
