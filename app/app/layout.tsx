@@ -5,12 +5,16 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  useAuth();
+
   return (
     <>
       <SidebarProvider>
@@ -21,7 +25,7 @@ export default function Layout({
               <SidebarTrigger className="sm:hidden" />
             </div>
           </header>
-          {children}
+          <div className="px-5">{children}</div>
         </SidebarInset>
       </SidebarProvider>
     </>

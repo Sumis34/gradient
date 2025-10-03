@@ -1,4 +1,3 @@
-// app/app/page.tsx
 "use client";
 
 import { useLiveQuery } from "@tanstack/react-db";

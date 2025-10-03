@@ -23,7 +23,13 @@ import { useCollections } from "@/lib/local-database/context";
 import { useLiveQuery } from "@tanstack/react-db";
 
 const data: SidebarData = {
-  navMain: [],
+  navMain: [
+    {
+      id: "dashboard",
+      title: "Dashboard",
+      icon: LayoutDashboard,
+    }
+  ],
   navCollapsible: {
     favorites: [
       {

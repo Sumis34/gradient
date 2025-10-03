@@ -29,7 +29,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         data: { session },
       } = await supabase.auth.getSession();
       setSession(session);
-      setUser(session?.user ?? null);
+
+      const user = session?.user ?? null;
+
+      if (user) {
+        const db = await initDB();
+        await enableSync(db, user.id);
+      }
+
+      setUser(user);
       setLoading(false);
     };
 
