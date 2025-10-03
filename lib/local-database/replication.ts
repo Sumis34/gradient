@@ -2,9 +2,7 @@
 
 import { replicateSupabase } from "rxdb/plugins/replication-supabase";
 import { supabase } from "@/lib/supabase/client";
-import { GradientDatabase, initDB } from "./rxdb";
-
-let started = false;
+import { GradientDatabase } from "./rxdb";
 
 const pullModifier = (doc: any) => {
   // supabase sends nulls, RxDB prefers undefined
@@ -14,10 +12,7 @@ const pullModifier = (doc: any) => {
   return doc;
 };
 
-export async function startReplication(db: GradientDatabase) {
-  if (started) return;
-  started = true;
-
+export function startReplication(db: GradientDatabase) {
   const gradesReplication = replicateSupabase({
     tableName: "grades",
     client: supabase,
@@ -96,19 +91,14 @@ export async function startReplication(db: GradientDatabase) {
 
   relSubjectsSemestersReplication.error$.subscribe((err) =>
     console.error("[replication error]", err)
-  );
-
-  await gradesReplication.awaitInitialReplication();
-  await subjectsReplication.awaitInitialReplication();
-  await semestersReplication.awaitInitialReplication();
-  await relSubjectsSemestersReplication.awaitInitialReplication();
-
-  console.log("Replication ready");
+  )
 
   return {
-    gradesReplication,
-    subjectsReplication,
-    semestersReplication,
-    relSubjectsSemestersReplication,
-  }
+    replications: [
+      gradesReplication,
+      subjectsReplication,
+      semestersReplication,
+      relSubjectsSemestersReplication,
+    ],
+  };
 }

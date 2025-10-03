@@ -1,11 +1,8 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase/client"; //
-import { enableSync } from "@/lib/local-database/utils";
-import { initDB } from "@/lib/local-database/rxdb";
-import { startReplication } from "@/lib/local-database/replication";
-// Define what data we want to share
+import { supabase } from "@/lib/supabase/client";
+
 interface AuthContextType {
   user: User | null; // User info (name, email, etc.)
   session: Session | null; // Session info (access token, etc.)
@@ -32,11 +29,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       const user = session?.user ?? null;
 
-      if (user) {
-        const db = await initDB();
-        await enableSync(db, user.id);
-      }
-
       setUser(user);
       setLoading(false);
     };
@@ -49,12 +41,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-
-      if (event === "SIGNED_IN" && session?.user) {
-        const db = await initDB();
-
-        await enableSync(db, session.user.id);
-      }
     });
     // Cleanup when the component unmounts
     return () => subscription?.unsubscribe();

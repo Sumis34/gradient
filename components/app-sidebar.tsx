@@ -19,7 +19,7 @@ import { NavHeader } from "@/components/nav-header";
 import { NavMain } from "@/components/nav-main";
 import type { SidebarData } from "./types";
 import { useAuth } from "@/hooks/use-auth";
-import { useCollections } from "@/lib/local-database/context";
+import { useCollections } from "@/context/collection-context";
 import { useLiveQuery } from "@tanstack/react-db";
 
 const data: SidebarData = {

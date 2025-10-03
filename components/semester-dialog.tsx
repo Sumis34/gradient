@@ -28,7 +28,7 @@ import { z } from "zod";
 import { Textarea } from "./ui/textarea";
 import { InputMultiSelect, InputMultiSelectTrigger } from "./ui/multi-select";
 import { useLiveQuery } from "@tanstack/react-db";
-import { useCollections } from "@/lib/local-database/context";
+import { useCollections } from "@/context/collection-context";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({

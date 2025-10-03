@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useCollections } from "@/lib/local-database/context";
+import { useCollections } from "@/context/collection-context";
 import { use } from "react";
 
 export default function SemesterPage({

@@ -28,7 +28,7 @@ async function assignUserId(db: GradientDatabase, userId: string) {
 async function enableSync(db: GradientDatabase, userId: string) {
   await assignUserId(db, userId);
 
-  await startReplication(db);
+  return await startReplication(db);
 }
 
 export { enableSync };

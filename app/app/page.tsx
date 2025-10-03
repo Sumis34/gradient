@@ -1,7 +1,7 @@
 "use client";
 
 import { useLiveQuery } from "@tanstack/react-db";
-import { useCollections } from "@/lib/local-database/context";
+import { useCollections } from "@/context/collection-context";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 

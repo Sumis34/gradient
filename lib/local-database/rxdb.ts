@@ -95,7 +95,8 @@ export type SemestersDocType = ExtractDocumentTypeFromTypedRxJsonSchema<
   typeof semestersSchemaTyped
 >;
 
-export const semestersSchema: RxJsonSchema<SemestersDocType> = semestersSchemaLiteral;
+export const semestersSchema: RxJsonSchema<SemestersDocType> =
+  semestersSchemaLiteral;
 
 export type SemestersCollection = RxCollection<SemestersDocType>;
 
@@ -113,15 +114,20 @@ const relSubjectsSemestersSchemaLiteral = {
   required: ["id", "subject_id", "semester_id"],
 } as const;
 
-const relSubjectsSemestersSchemaTyped = toTypedRxJsonSchema(relSubjectsSemestersSchemaLiteral);
+const relSubjectsSemestersSchemaTyped = toTypedRxJsonSchema(
+  relSubjectsSemestersSchemaLiteral
+);
 
-export type RelSubjectsSemestersDocType = ExtractDocumentTypeFromTypedRxJsonSchema<
-  typeof relSubjectsSemestersSchemaTyped
->;
+export type RelSubjectsSemestersDocType =
+  ExtractDocumentTypeFromTypedRxJsonSchema<
+    typeof relSubjectsSemestersSchemaTyped
+  >;
 
-export const relSubjectsSemestersSchema: RxJsonSchema<RelSubjectsSemestersDocType> = relSubjectsSemestersSchemaLiteral;
+export const relSubjectsSemestersSchema: RxJsonSchema<RelSubjectsSemestersDocType> =
+  relSubjectsSemestersSchemaLiteral;
 
-export type RelSubjectsSemestersCollection = RxCollection<RelSubjectsSemestersDocType>;
+export type RelSubjectsSemestersCollection =
+  RxCollection<RelSubjectsSemestersDocType>;
 
 let dbPromise: Promise<GradientDatabase> | null = null;
 
@@ -132,25 +138,31 @@ export type GradientDatabase = RxDatabase<{
   relSubjectsSemesters: RelSubjectsSemestersCollection;
 }>;
 
-export async function initDB(): Promise<GradientDatabase> {
+async function createDatabase(): Promise<GradientDatabase> {
+  const db = await createRxDatabase<GradientDatabase>({
+    name: "gradient",
+    storage: wrappedValidateAjvStorage({
+      storage: getRxStorageDexie(),
+    }),
+  });
+
+  await db.addCollections({
+    grades: { schema: gradesSchema },
+    subjects: { schema: subjectSchema },
+    semesters: { schema: semestersSchema },
+    relSubjectsSemesters: { schema: relSubjectsSemestersSchema },
+  });
+
+  return db;
+}
+
+/**
+ * Returns the singleton instance of the GradientDatabase.
+ * Ensures the DB is only initialized once.
+ */
+export function getDB(): Promise<GradientDatabase> {
   if (!dbPromise) {
-    dbPromise = (async () => {
-      const db = await createRxDatabase<GradientDatabase>({
-        name: "gradient",
-        storage: wrappedValidateAjvStorage({
-          storage: getRxStorageDexie(),
-        }),
-      });
-
-      await db.addCollections({
-        grades: { schema: gradesSchema },
-        subjects: { schema: subjectSchema },
-        semesters: { schema: semestersSchema },
-        relSubjectsSemesters: { schema: relSubjectsSemestersSchema },
-      });
-
-      return db;
-    })();
+    dbPromise = createDatabase();
   }
   return dbPromise;
 }
