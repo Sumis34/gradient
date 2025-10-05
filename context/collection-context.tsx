@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useContext } from "react";
 import { Collection, createCollection } from "@tanstack/react-db";
-import { rxdbCollectionOptions } from "@tanstack/rxdb-db-collection";
+import { rxdbCollectionOptions } from "@/lib/local-database/tanstack-db-overwrite/tanstack-db-rxdb-collection"; // 
 import { usePersistence } from "./persistence-context";
 import {
   GradesDocType,
