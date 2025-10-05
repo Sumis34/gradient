@@ -77,22 +77,6 @@ export function startReplication(db: GradientDatabase) {
     modifiedField: "updated_at",
   });
 
-  gradesReplication.error$.subscribe((err) =>
-    console.error("[replication error]", err)
-  );
-
-  subjectsReplication.error$.subscribe((err) =>
-    console.error("[replication error]", err)
-  );
-
-  semestersReplication.error$.subscribe((err) =>
-    console.error("[replication error]", err)
-  );
-
-  relSubjectsSemestersReplication.error$.subscribe((err) =>
-    console.error("[replication error]", err)
-  )
-
   return {
     replications: [
       gradesReplication,

@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useCollections } from "@/context/collection-context";
+import { usePersistence } from "@/context/persistence-context";
 import { use } from "react";
 
 export default function SemesterPage({
@@ -13,6 +14,13 @@ export default function SemesterPage({
 
   const { semesters } = useCollections();
 
+  const db = usePersistence();
+
+  const deleteDoc = async () => {
+    const doc = await db.semesters.findOne(id).exec();
+    await doc?.remove();
+  };
+
   return (
     <div>
       Semesters Page {id}
@@ -20,8 +28,10 @@ export default function SemesterPage({
         variant={"destructive"}
         onClick={async () => {
           try {
-            const tx = semesters.delete(id);
-            await tx.isPersisted.promise;
+            // const tx = semesters.delete(id);
+            // await tx.isPersisted.promise;
+
+            await deleteDoc();
             console.log("Delete successful");
           } catch (error) {
             console.log("Delete failed:", error);

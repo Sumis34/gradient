@@ -42,6 +42,7 @@ export function AddSemesterDialog({ children }: { children: React.ReactNode }) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
+      description: "",
       subjects: [],
     },
   });
@@ -59,9 +60,10 @@ export function AddSemesterDialog({ children }: { children: React.ReactNode }) {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const semesterId = crypto.randomUUID();
+
     semesters.insert({
       id: semesterId,
-      description: data.description ?? "",
+      description: data.description,
       name: data.name,
     });
 

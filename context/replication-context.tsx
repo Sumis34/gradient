@@ -3,10 +3,53 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { type RxSupabaseReplicationState } from "rxdb/plugins/replication-supabase";
 import { usePersistence } from "./persistence-context";
-import { enableSync } from "../lib/local-database/utils";
+import { assignUserId } from "../lib/local-database/utils";
+import { startReplication } from "@/lib/local-database/replication";
 
-const ReplicationContext = createContext<RxSupabaseReplicationState<any>[] | null>(null);
+//
+// --- Context Setup ---
+// Default to [] instead of null to avoid false errors in useReplication()
+//
+const ReplicationContext = createContext<RxSupabaseReplicationState<any>[]>([]);
 
+//
+// --- Singleton Promise ---
+// Guarantees startReplication() runs exactly once per app session.
+//
+let replicationPromise: Promise<RxSupabaseReplicationState<any>[]> | null =
+  null;
+
+function getReplicationPromise(
+  db: any, userId: string
+): Promise<RxSupabaseReplicationState<any>[]> {
+  if (replicationPromise) return replicationPromise;
+
+  replicationPromise = (async () => {
+    console.log("[Replication] Starting replication...");
+    const { replications } = startReplication(db);
+
+    await assignUserId(db, userId);
+
+    for (const [index, replication] of replications.entries()) {
+      console.log(
+        `Waiting for initial replication... [${index + 1} of ${
+          replications.length
+        }]`
+      );
+      await replication.awaitInSync();
+    }
+
+    console.log("[Replication] All replications initialized.");
+    return replications;
+  })();
+
+  return replicationPromise;
+}
+
+//
+// --- Provider Component ---
+// Handles user assignment + replication init only once.
+//
 export function ReplicationProvider({
   children,
 }: {
@@ -14,30 +57,18 @@ export function ReplicationProvider({
 }) {
   const { user } = useAuth();
   const db = usePersistence();
-  const [replications, setReplications] = useState<RxSupabaseReplicationState<any>[]>([]);
+  const [replications, setReplications] = useState<
+    RxSupabaseReplicationState<any>[]
+  >([]);
 
   useEffect(() => {
-    let active: RxSupabaseReplicationState<any>[] = [];
+    if (!user || !db) return;
 
     (async () => {
-      if (user) {
-        const { replications } = await enableSync(db, user.id);
-        active = replications;
+      const reps = await getReplicationPromise(db, user.id);
 
-        for (const [index, replication] of active.entries()) {
-          console.log(`Waiting for initial replication... [${index + 1} of ${active.length}]`);
-          await replication.awaitInitialReplication();
-        }
-
-        setReplications(active);
-      }
+      setReplications(reps);
     })();
-
-    return () => {
-      for (const r of active) {
-        r.cancel();
-      }
-    };
   }, [user, db]);
 
   return (

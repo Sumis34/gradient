@@ -4,10 +4,56 @@ import { useLiveQuery } from "@tanstack/react-db";
 import { useCollections } from "@/context/collection-context";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import { usePersistence } from "@/context/persistence-context";
+import { useReplication } from "@/context/replication-context";
+import { useEffect } from "react";
 
 export default function AppPage() {
-  const { grades, subjects, semesters, relSubjectsSemesters } = useCollections();
+  const { grades, subjects, semesters, relSubjectsSemesters } =
+    useCollections();
   const { user } = useAuth();
+
+  const db = usePersistence();
+
+  const replications = useReplication();
+
+  useEffect(() => {
+    const sub = db.semesters.$.subscribe((ev) => {
+      console.log("event", ev);
+    });
+
+    return () => {
+      sub.unsubscribe();
+    };
+  }, [db]);
+
+  const analyzeReplications = () => {
+    console.log("Analyzing Replications: " + replications.length);
+    for (const r of replications) {
+      console.log("Replication Info:");
+      console.log("  Is Paused:", r.isPaused());
+      console.log("  Collection:", r.collection.name);
+      console.log("  Stopped:", r.isStopped());
+    }
+  };
+
+  const fetchDirectlyFromDb = async () => {
+    const allSemesters = await db.semesters.find().exec();
+    console.log("All semesters from direct DB query:", allSemesters);
+  };
+
+  const updateLastSemesterName = async () => {
+    const allSemesters = await db.semesters.find().exec();
+    if (allSemesters.length === 0) return;
+    const lastSemester = allSemesters[allSemesters.length - 1];
+   
+    await db.semesters.upsert({
+      id: lastSemester.id,
+      name: "Updated Name " + new Date().toISOString(),
+    })
+
+    console.log("Updated last semester:", lastSemester);
+  }
 
   const { data: allGrades = [] } = useLiveQuery((q) =>
     q.from({
@@ -27,6 +73,8 @@ export default function AppPage() {
     })
   );
 
+  console.log("All semesters from live query:", allSemesters);
+
   const { data: allRelSubjectsSemesters = [] } = useLiveQuery((q) =>
     q.from({
       relSubjectsSemesters: relSubjectsSemesters,
@@ -35,6 +83,9 @@ export default function AppPage() {
 
   return (
     <div>
+      <Button onClick={fetchDirectlyFromDb}>Fetch Directly From DB</Button>
+      <Button onClick={analyzeReplications}>Analyze Replications</Button>
+      <Button onClick={updateLastSemesterName}>Update Last Semester Name</Button>
       <h1>Rel Subjects Semesters</h1>
       {allRelSubjectsSemesters.map((r) => (
         <div key={r.id}>
@@ -99,6 +150,7 @@ export default function AppPage() {
             id: crypto.randomUUID(),
             user_id: user?.id,
             name: "Semester " + (allSemesters.length + 1),
+            description: "Description " + (allSemesters.length + 1),
           });
         }}
       >

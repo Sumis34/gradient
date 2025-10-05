@@ -1,7 +1,7 @@
 import { startReplication } from "./replication";
 import { GradientDatabase } from "./rxdb";
 
-async function assignUserId(db: GradientDatabase, userId: string) {
+export async function assignUserId(db: GradientDatabase, userId: string) {
   const grades = await db.grades.find().exec();
   const subjects = await db.subjects.find().exec();
   const semesters = await db.semesters.find().exec();
@@ -28,7 +28,7 @@ async function assignUserId(db: GradientDatabase, userId: string) {
 async function enableSync(db: GradientDatabase, userId: string) {
   await assignUserId(db, userId);
 
-  return await startReplication(db);
+  return startReplication(db);
 }
 
 export { enableSync };
