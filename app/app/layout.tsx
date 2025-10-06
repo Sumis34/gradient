@@ -1,5 +1,6 @@
 "use client";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import {
   SidebarInset,
   SidebarProvider,
@@ -12,7 +13,6 @@ export default function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   useAuth();
 
   return (
@@ -20,12 +20,10 @@ export default function Layout({
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-            <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="sm:hidden" />
-            </div>
-          </header>
-          <div className="px-5">{children}</div>
+          <div>{children}</div>
+          <div className="absolute inset-0 p-4 flex justify-center items-end sm:hidden pointer-events-none">
+            <div className="">Mobile Nav</div>
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </>

@@ -28,6 +28,7 @@ const data: SidebarData = {
       id: "dashboard",
       title: "Dashboard",
       icon: LayoutDashboard,
+      url: "/app",
     }
   ],
   navCollapsible: {

@@ -65,8 +65,8 @@ export function NavCollapsible({
         </Collapsible>
       )}
 
-      {semesters && semesters.length > 0 && (
-        <Collapsible className="group/collapsible">
+      {semesters && (
+        <Collapsible className="group/collapsible" defaultOpen>
           <SidebarGroup>
             <SidebarGroupLabel
               asChild
