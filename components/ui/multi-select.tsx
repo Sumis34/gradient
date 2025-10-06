@@ -199,7 +199,7 @@ export const InputMultiSelectTrigger = React.forwardRef<
         type="button"
         disabled={disabled}
         className={cn(
-          "flex h-auto min-h-11 w-full items-center justify-between p-1 [&_svg]:pointer-events-auto",
+          "flex h-auto min-h-9 w-full items-center justify-between p-1 [&_svg]:pointer-events-auto",
           "hover:bg-transparent",
           disabled && "[&_svg]:pointer-events-none",
           className
@@ -231,13 +231,6 @@ export const InputMultiSelectTrigger = React.forwardRef<
                   >
                     {option?.icon && <>{option.icon}</>}
                     {option?.label}
-                    <X
-                      className="ml-1 h-3.5 w-3.5 cursor-pointer text-muted-foreground hover:text-foreground"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onOptionSelect(value);
-                      }}
-                    />
                   </Badge>
                 );
               })}

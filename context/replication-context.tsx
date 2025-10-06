@@ -62,7 +62,14 @@ export function ReplicationProvider({
   >([]);
 
   useEffect(() => {
-    if (!user || !db) return;
+    if (!user || !db) {
+      if (replications.length > 0) {
+        for (const r of replications) {
+          r.cancel();
+        }
+      }
+      return;
+    }
 
     (async () => {
       const reps = await getReplicationPromise(db, user.id);
