@@ -1,11 +1,15 @@
-# RxDB & Supabase `updated_at` Issue
+# Gradient - Grades Tracker
 
-## Problem
+Gradient is a offline-first web app that allows you to track your grades.
+
+## RxDB & Supabase `updated_at` Issue
+
+### Problem
 
 RxDB uses `updated_at` to detect the newest document during replication.  
 If Supabase has a `NOW()` trigger on `updated_at`, it can overwrite client timestamps. This causes updates to flip back and forth — every second change may appear undone.
 
-## Solution
+### Solution
 
 - **Disable the `NOW()` trigger** in SQL for `updated_at`.  
 - Client must set `updated_at` on every local change.  
