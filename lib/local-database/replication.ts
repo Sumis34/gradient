@@ -12,69 +12,54 @@ const pullModifier = (doc: any) => {
   return doc;
 };
 
+const pushModifier = (doc: any) => {
+  // RxDB sends undefined, Supabase prefers null
+  if (!doc.updated_at) {
+    doc.updated_at = new Date().toISOString();
+  }
+  return doc;
+};
+
+const commonConfig = {
+  client: supabase,
+  live: true,
+  pull: {
+    batchSize: 50,
+    modifier: pullModifier,
+  },
+  push: {
+    batchSize: 50,
+    modifier: pushModifier,
+  },
+};
+
 export function startReplication(db: GradientDatabase) {
   const gradesReplication = replicateSupabase({
     tableName: "grades",
-    client: supabase,
     collection: db.grades,
     replicationIdentifier: "grades-supabase",
-    live: true,
-    pull: {
-      batchSize: 50,
-      modifier: pullModifier,
-    },
-    push: {
-      batchSize: 50,
-    },
-    modifiedField: "updated_at",
+    ...commonConfig,
   });
 
   const subjectsReplication = replicateSupabase({
     tableName: "subjects",
-    client: supabase,
     collection: db.subjects,
     replicationIdentifier: "subjects-supabase",
-    live: true,
-    pull: {
-      batchSize: 50,
-      modifier: pullModifier,
-    },
-    push: {
-      batchSize: 50,
-    },
-    modifiedField: "updated_at",
+    ...commonConfig,
   });
 
   const semestersReplication = replicateSupabase({
     tableName: "semesters",
-    client: supabase,
     collection: db.semesters,
     replicationIdentifier: "semesters-supabase",
-    live: true,
-    pull: {
-      batchSize: 50,
-      modifier: pullModifier,
-    },
-    push: {
-      batchSize: 50,
-    },
-    modifiedField: "updated_at",
+    ...commonConfig,
   });
 
   const relSubjectsSemestersReplication = replicateSupabase({
     tableName: "rel_subjects_semesters",
-    client: supabase,
     collection: db.relSubjectsSemesters,
     replicationIdentifier: "rel_subjects_semesters-supabase",
-    live: true,
-    pull: {
-      batchSize: 50,
-      modifier: pullModifier,
-    },
-    push: {
-      batchSize: 50,
-    },
-    modifiedField: "updated_at",
+    ...commonConfig,
   });
 
   return {
