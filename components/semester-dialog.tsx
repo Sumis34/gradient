@@ -27,9 +27,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Textarea } from "./ui/textarea";
 import { InputMultiSelect, InputMultiSelectTrigger } from "./ui/multi-select";
-import { useLiveQuery } from "@tanstack/react-db";
+import { count, useLiveQuery } from "@tanstack/react-db";
 import { useCollections } from "@/context/collection-context";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   name: z.string().min(2).max(100),
@@ -37,7 +38,13 @@ const formSchema = z.object({
   description: z.string().max(500).optional(),
 });
 
-export function AddSemesterDialog({ children }: { children: React.ReactNode }) {
+export function AddSemesterDialog({
+  children,
+  semesterCount,
+}: {
+  children: React.ReactNode;
+  semesterCount?: number;
+}) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,6 +64,10 @@ export function AddSemesterDialog({ children }: { children: React.ReactNode }) {
       label: subject.name,
     }))
   );
+
+  useEffect(() => {
+    form.setValue("name", `Semester ${semesterCount ? semesterCount + 1 : 1}`);
+  }, [semesterCount]);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const semesterId = crypto.randomUUID();
@@ -83,7 +94,7 @@ export function AddSemesterDialog({ children }: { children: React.ReactNode }) {
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             <DialogHeader>
               <DialogTitle>Add Semester</DialogTitle>
               <DialogDescription></DialogDescription>

@@ -3,13 +3,7 @@
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import {
   IconAd2,
-  IconBellRinging,
-  IconCalendar,
-  IconCalendarStats,
-  IconListDetails,
   IconNews,
-  IconNotebook,
-  IconProgressCheck,
   IconSettingsCode,
 } from "@tabler/icons-react";
 import { LayoutDashboard, Package } from "lucide-react";
