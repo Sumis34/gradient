@@ -41,11 +41,8 @@ export default function SemesterPage({
 }) {
   const { id } = use(params);
 
-  const {
-    semesters: semestersCollection,
-    relSubjectsSemesters: relSubjectsSemestersCollection,
-    subjects: subjectsCollection,
-  } = useCollections();
+  const { semesters: semestersCollection, subjects: subjectsCollection } =
+    useCollections();
 
   const { data: semesters } = useLiveQuery((q) =>
     q
@@ -55,11 +52,8 @@ export default function SemesterPage({
 
   const { data: subjects } = useLiveQuery((q) =>
     q
-      .from({ rel: relSubjectsSemestersCollection })
-      .where(({ rel }) => eq(rel.semester_id, id))
-      .innerJoin({ subject: subjectsCollection }, ({ rel, subject }) =>
-        eq(rel.subject_id, subject.id)
-      )
+      .from({ subject: subjectsCollection })
+      .where(({ subject }) => eq(subject.semester_id, id))
   );
 
   const semester = semesters?.at(0);
@@ -147,12 +141,11 @@ export default function SemesterPage({
           )}
         </Dialog>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {subjects.map(({ subject, rel }) => {
+          {subjects.map((subject) => {
             return (
               <SubjectCard
                 key={subject.id}
                 subject={subject}
-                relSubjectSemester={rel}
                 semester={semester}
               />
             );

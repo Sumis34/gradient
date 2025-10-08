@@ -9,7 +9,7 @@ import { useReplication } from "@/context/replication-context";
 import { useEffect } from "react";
 
 export default function AppPage() {
-  const { grades, subjects, semesters, relSubjectsSemesters } =
+  const { grades, subjects, semesters } =
     useCollections();
   const { user } = useAuth();
 
@@ -75,25 +75,12 @@ export default function AppPage() {
 
   console.log("All semesters from live query:", allSemesters);
 
-  const { data: allRelSubjectsSemesters = [] } = useLiveQuery((q) =>
-    q.from({
-      relSubjectsSemesters: relSubjectsSemesters,
-    })
-  );
-
   return (
     <div>
       <Button onClick={fetchDirectlyFromDb}>Fetch Directly From DB</Button>
       <Button onClick={analyzeReplications}>Analyze Replications</Button>
       <Button onClick={updateLastSemesterName}>Update Last Semester Name</Button>
       <h1>Rel Subjects Semesters</h1>
-      {allRelSubjectsSemesters.map((r) => (
-        <div key={r.id}>
-          <p>ID: {r.id}</p>
-          <p>Subject ID: {r.subject_id}</p>
-          <p>Semester ID: {r.semester_id}</p>
-        </div>
-      ))}
       <h1>Semesters</h1>
       {allSemesters.map((s) => (
         <div key={s.id}>
@@ -115,7 +102,7 @@ export default function AppPage() {
           <p>ID: {g.id}</p>
           <p>User: {g.user_id}</p>
           <p>Subject: {g.subject_id}</p>
-          <p>Grade: {g.grade}</p>
+          <p>Grade: {g.value}</p>
           <p>Date: {g.date}</p>
           <hr />
         </div>
@@ -126,23 +113,12 @@ export default function AppPage() {
             id: crypto.randomUUID(),
             user_id: user?.id,
             subject_id: "496128eb-a35d-4400-b05a-aaea97bb2cfc",
-            grade: Math.floor(Math.random() * 100),
+            value: Math.floor(Math.random() * 100),
             date: new Date().toISOString(),
           });
         }}
       >
         Add
-      </Button>
-      <Button
-        onClick={() => {
-          subjects.insert({
-            id: crypto.randomUUID(),
-            user_id: user?.id,
-            name: "Gugus",
-          });
-        }}
-      >
-        Subject
       </Button>
       <Button
         onClick={() => {
@@ -155,21 +131,6 @@ export default function AppPage() {
         }}
       >
         Semester
-      </Button>
-      <Button
-        onClick={() => {
-          if (allSubjects.length === 0 || allSemesters.length === 0) {
-            alert("Please create subjects and semesters first.");
-            return;
-          }
-          relSubjectsSemesters.insert({
-            id: crypto.randomUUID(),
-            subject_id: allSubjects[0].id,
-            semester_id: allSemesters[0].id,
-          });
-        }}
-      >
-        Rel Subjects Semesters
       </Button>
     </div>
   );

@@ -55,19 +55,11 @@ export function startReplication(db: GradientDatabase) {
     ...commonConfig,
   });
 
-  const relSubjectsSemestersReplication = replicateSupabase({
-    tableName: "rel_subjects_semesters",
-    collection: db.relSubjectsSemesters,
-    replicationIdentifier: "rel_subjects_semesters-supabase",
-    ...commonConfig,
-  });
-
   return {
     replications: [
       gradesReplication,
       subjectsReplication,
       semestersReplication,
-      relSubjectsSemestersReplication,
     ],
   };
 }

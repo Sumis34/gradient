@@ -37,11 +37,11 @@ const formSchema = z.object({
 
 export function EditGradeForm({
   children,
-  subjectRelId,
+  subjectId,
   afterSubmit,
 }: {
   children: React.ReactNode;
-  subjectRelId: string;
+  subjectId: string;
   afterSubmit?: () => void;
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -61,10 +61,10 @@ export function EditGradeForm({
 
     grades.insert({
       id,
-      description: data.description,
-      grade: data.grade,
+      name: data.description,
+      value: data.grade,
       weight: data.weight,
-      subject_id: subjectRelId,
+      subject_id: subjectId,
       date: new Date().toISOString(),
     });
 

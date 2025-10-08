@@ -42,27 +42,20 @@ export default function Page({
   const { id, suid } = use(params);
   const [isAddGradeOpen, setIsAddGradeOpen] = useState(false);
 
-  const {
-    subjects: subjectsCollection,
-    grades: gradesCollection,
-    relSubjectsSemesters: relSubjectsSemestersCollection,
-  } = useCollections();
+  const { subjects: subjectsCollection, grades: gradesCollection } =
+    useCollections();
 
   const { data: subjects } = useLiveQuery((q) =>
     q
-      .from({ rel: relSubjectsSemestersCollection })
-      .innerJoin({ subject: subjectsCollection }, ({ subject, rel }) =>
-        eq(subject.id, rel.subject_id)
+      .from({ subject: subjectsCollection })
+      .where(({ subject }) =>
+        and(eq(subject.semester_id, id), eq(subject.id, suid))
       )
-      .where(({ rel }) =>
-        and(eq(rel.semester_id, id), eq(rel.subject_id, suid))
-      )
-      .select(({ subject, rel }) => ({
+      .select(({ subject }) => ({
         id: subject.id,
         name: subject.name,
         description: subject.description,
-        semesterId: rel.semester_id,
-        relId: rel.id,
+        semesterId: subject.semester_id,
       }))
   );
 
@@ -72,8 +65,8 @@ export default function Page({
     (q) =>
       q
         .from({ grade: gradesCollection })
-        .where(({ grade }) => eq(grade.subject_id, subject?.relId)),
-    [subject?.relId]
+        .where(({ grade }) => eq(grade.subject_id, suid)),
+    [suid]
   );
 
   const decodeGrade = (grade: number) => {
@@ -97,7 +90,7 @@ export default function Page({
             </DialogHeader>
             <EditGradeForm
               afterSubmit={() => setIsAddGradeOpen(false)}
-              subjectRelId={subject?.relId ?? ""}
+              subjectId={suid}
             >
               <DialogFooter className="justify-between">
                 <DialogClose asChild>
@@ -155,11 +148,11 @@ export default function Page({
                     <tr key={grade.id} className="border-b last:border-b-0">
                       <td className="py-2 align-middle w-32 pl-5">
                         <span className="text-3xl">
-                          {decodeGrade(grade.grade)}
+                          {decodeGrade(grade.value)}
                         </span>
                       </td>
                       <td className="align-middle">
-                        <div className="font-medium">{grade.description}</div>
+                        <div className="font-medium">{grade.name}</div>
                         <div className="text-sm text-muted-foreground">
                           {new Date(grade.date).toLocaleDateString()}
                         </div>

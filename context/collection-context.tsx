@@ -5,7 +5,6 @@ import { rxdbCollectionOptions } from "@/lib/local-database/tanstack-db-overwrit
 import { usePersistence } from "./persistence-context";
 import {
   GradesDocType,
-  RelSubjectsSemestersDocType,
   SemestersDocType,
   SubjectsDocType,
 } from "../lib/local-database/rxdb";
@@ -14,7 +13,6 @@ export type AppCollections = {
   grades: Collection<GradesDocType, string>;
   subjects: Collection<SubjectsDocType, string>;
   semesters: Collection<SemestersDocType, string>;
-  relSubjectsSemesters: Collection<RelSubjectsSemestersDocType, string>;
 };
 
 const CollectionContext = createContext<AppCollections | null>(null);
@@ -47,17 +45,9 @@ export function CollectionProvider({
     })
   );
 
-  const relSubjectsSemesters: Collection<RelSubjectsSemestersDocType, string> =
-    createCollection(
-      rxdbCollectionOptions<RelSubjectsSemestersDocType>({
-        rxCollection: db.relSubjectsSemesters,
-        startSync: true,
-      })
-    );
-
   return (
     <CollectionContext.Provider
-      value={{ grades, subjects, semesters, relSubjectsSemesters }}
+      value={{ grades, subjects, semesters }}
     >
       {children}
     </CollectionContext.Provider>

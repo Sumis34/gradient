@@ -5,11 +5,9 @@ import { eq, useLiveQuery, count } from "@tanstack/react-db";
 import { useCollections } from "@/context/collection-context";
 export default function SubjectCard({
   subject,
-  relSubjectSemester,
   semester,
 }: {
   subject: { id: string; name: string; description?: string };
-  relSubjectSemester: { id: string };
   semester: { id: string; name: string };
 }) {
   const { grades: gradesCollection } = useCollections();
@@ -21,8 +19,8 @@ export default function SubjectCard({
         .select(({ grade }) => ({
           count: count(grade.id),
         }))
-        .where(({ grade }) => eq(grade.subject_id, relSubjectSemester.id)),
-    [relSubjectSemester.id]
+        .where(({ grade }) => eq(grade.subject_id, subject.id)),
+    [subject.id]
   );
 
   const gradesCount = grades?.at(0)?.count || 0;
@@ -40,8 +38,7 @@ export default function SubjectCard({
           <div className="flex justify-between">
             <div>
               <h2 className="text-lg font-semibold">{subject.name}</h2>
-              <CardDescription>{subject.description || "-"
-                }</CardDescription>
+              <CardDescription>{subject.description || "-"}</CardDescription>
             </div>
             <div className="relative">
               {stack.map((_, index) => (

@@ -29,12 +29,12 @@ const gradesSchemaLiteral = {
     created_at: { type: "string", format: "date-time" },
     weight: { type: "integer" },
     subject_id: { type: "string", maxLength: 100 },
-    grade: { type: "number" },
-    description: { type: "string" },
+    value: { type: "number" },
+    name: { type: "string" },
     date: { type: "string", format: "date-time" },
     user_id: { type: "string", maxLength: 100 },
   },
-  required: ["id", "subject_id", "grade", "date"],
+  required: ["id", "subject_id", "value", "date"],
 } as const;
 
 const gradesSchemaTyped = toTypedRxJsonSchema(gradesSchemaLiteral);
@@ -57,10 +57,10 @@ const subjectSchema = {
     name: { type: "string" },
     description: { type: "string" },
     user_id: { type: "string", maxLength: 100 },
-    updated_at: { type: "string", format: "date-time" },
+    semester_id: { type: "string", maxLength: 100 },
     _deleted: { type: "boolean" },
   },
-  required: ["id", "name"],
+  required: ["id", "name", "semester_id"],
 } as const;
 
 const subjectsSchemaTyped = toTypedRxJsonSchema(subjectSchema);
@@ -100,42 +100,12 @@ export const semestersSchema: RxJsonSchema<SemestersDocType> =
 
 export type SemestersCollection = RxCollection<SemestersDocType>;
 
-const relSubjectsSemestersSchemaLiteral = {
-  title: "rel_subjects_semesters",
-  version: 0,
-  type: "object",
-  primaryKey: "id",
-  properties: {
-    id: { type: "string", maxLength: 100 },
-    name_overwrite: { type: "string" },
-    subject_id: { type: "string", maxLength: 100 },
-    semester_id: { type: "string", maxLength: 100 },
-  },
-  required: ["id", "subject_id", "semester_id"],
-} as const;
-
-const relSubjectsSemestersSchemaTyped = toTypedRxJsonSchema(
-  relSubjectsSemestersSchemaLiteral
-);
-
-export type RelSubjectsSemestersDocType =
-  ExtractDocumentTypeFromTypedRxJsonSchema<
-    typeof relSubjectsSemestersSchemaTyped
-  >;
-
-export const relSubjectsSemestersSchema: RxJsonSchema<RelSubjectsSemestersDocType> =
-  relSubjectsSemestersSchemaLiteral;
-
-export type RelSubjectsSemestersCollection =
-  RxCollection<RelSubjectsSemestersDocType>;
-
 let dbPromise: Promise<GradientDatabase> | null = null;
 
 export type GradientDatabase = RxDatabase<{
   grades: GradeCollection;
   subjects: SubjectsCollection;
   semesters: SemestersCollection;
-  relSubjectsSemesters: RelSubjectsSemestersCollection;
 }>;
 
 async function createDatabase(): Promise<GradientDatabase> {
@@ -150,7 +120,6 @@ async function createDatabase(): Promise<GradientDatabase> {
     grades: { schema: gradesSchema },
     subjects: { schema: subjectSchema },
     semesters: { schema: semestersSchema },
-    relSubjectsSemesters: { schema: relSubjectsSemestersSchema },
   });
 
   return db;

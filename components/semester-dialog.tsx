@@ -34,7 +34,6 @@ import { useEffect } from "react";
 
 const formSchema = z.object({
   name: z.string().min(2).max(100),
-  subjects: z.array(z.string()),
   description: z.string().max(500).optional(),
 });
 
@@ -50,20 +49,12 @@ export function AddSemesterDialog({
     defaultValues: {
       name: "",
       description: "",
-      subjects: [],
     },
   });
 
   const router = useRouter();
 
-  const { subjects, semesters, relSubjectsSemesters } = useCollections();
-
-  const { data: allSubjects = [] } = useLiveQuery((q) =>
-    q.from({ subject: subjects }).select(({ subject }) => ({
-      value: subject.id,
-      label: subject.name,
-    }))
-  );
+  const { semesters } = useCollections();
 
   useEffect(() => {
     form.setValue("name", `Semester ${semesterCount ? semesterCount + 1 : 1}`);
@@ -77,14 +68,6 @@ export function AddSemesterDialog({
       description: data.description,
       name: data.name,
     });
-
-    relSubjectsSemesters.insert(
-      data.subjects.map((subjectId) => ({
-        subject_id: subjectId,
-        semester_id: semesterId,
-        id: crypto.randomUUID(),
-      }))
-    );
 
     router.push(`/app/semester/${semesterId}`);
   };
@@ -122,28 +105,6 @@ export function AddSemesterDialog({
                     <FormLabel className="capitalize">{field.name}</FormLabel>
                     <FormControl>
                       <Textarea placeholder="" {...field} />
-                    </FormControl>
-                    <FormDescription />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="subjects"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="capitalize">{field.name}</FormLabel>
-                    <FormControl>
-                      <InputMultiSelect
-                        options={allSubjects}
-                        value={field.value || []}
-                        onValueChange={field.onChange}
-                      >
-                        {(provided) => (
-                          <InputMultiSelectTrigger {...provided} />
-                        )}
-                      </InputMultiSelect>
                     </FormControl>
                     <FormDescription />
                     <FormMessage />

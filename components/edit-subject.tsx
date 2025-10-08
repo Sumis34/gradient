@@ -57,21 +57,16 @@ export function EditSubjectForm({
 
   const router = useRouter();
 
-  const { subjects, relSubjectsSemesters } = useCollections();
+  const { subjects } = useCollections();
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const id = subjectId ?? crypto.randomUUID();
 
     subjects.insert({
       id,
-      description: data.description,
       name: data.name,
-    });
-
-    relSubjectsSemesters.insert({
-      id: crypto.randomUUID(),
+      description: data.description,
       semester_id: semesterId,
-      subject_id: id,
     });
 
     router.push(`/app/semester/${semesterId}/subject/${id}`);
@@ -102,7 +97,10 @@ export function EditSubjectForm({
               <FormItem>
                 <FormLabel className="capitalize">{field.name}</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Advanced Mathematics with Mr. Friedman" {...field} />
+                  <Textarea
+                    placeholder="Advanced Mathematics with Mr. Friedman"
+                    {...field}
+                  />
                 </FormControl>
                 <FormDescription />
                 <FormMessage />
