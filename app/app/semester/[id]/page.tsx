@@ -1,6 +1,7 @@
 "use client";
 
 import { EditSubjectForm } from "@/components/edit-subject";
+import SubjectCard from "@/components/subject-card";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,9 +19,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { useCollections } from "@/context/collection-context";
+import { IconBook2 } from "@tabler/icons-react";
 import { eq, useLiveQuery } from "@tanstack/react-db";
-import Link from "next/link";
+import { PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { use } from "react";
 
@@ -30,7 +40,6 @@ export default function SemesterPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const router = useRouter();
 
   const {
     semesters: semestersCollection,
@@ -55,8 +64,7 @@ export default function SemesterPage({
 
   const semester = semesters?.at(0);
 
-  if (!semester) {
-    router.push("/app/semester");
+  if (!semester || !subjects) {
     return <></>;
   }
 
@@ -90,11 +98,14 @@ export default function SemesterPage({
         </div>
       </div>
       <div>
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="text-lg font-semibold">Subjects</h2>
-          <Dialog>
+        <Dialog>
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="text-lg font-semibold">Subjects</h2>
             <DialogTrigger asChild>
-              <Button>Add Subject</Button>
+              <Button size={"sm"}>
+                <PlusIcon />
+                Add Subject
+              </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
@@ -112,35 +123,38 @@ export default function SemesterPage({
                 </DialogFooter>
               </EditSubjectForm>
             </DialogContent>
-          </Dialog>
-        </div>
+          </div>
+          {subjects.length === 0 && (
+            <Empty className="border border-dashed">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <IconBook2 />
+                </EmptyMedia>
+                <EmptyTitle>No Subjects Yet</EmptyTitle>
+                <EmptyDescription>
+                  Add subjects to this semester to start tracking your grades.
+                </EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <DialogTrigger asChild>
+                  <Button size={"sm"}>
+                    <PlusIcon />
+                    Add Subject
+                  </Button>
+                </DialogTrigger>
+              </EmptyContent>
+            </Empty>
+          )}
+        </Dialog>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {subjects.map(({ subject }) => {
+          {subjects.map(({ subject, rel }) => {
             return (
-              <Link
-                href={`/app/semester/${semester.id}/subject/${subject.id}`}
+              <SubjectCard
                 key={subject.id}
-              >
-                <Card className="overflow-hidden cursor-pointer group">
-                  <CardHeader>
-                    <div className="flex justify-between">
-                      <div>
-                        <h2 className="text-lg font-semibold">
-                          {subject.name}
-                        </h2>
-                        <CardDescription>{subject.description}</CardDescription>
-                      </div>
-                      <div className="relative">
-                        <div className="w-20 h-40 border border-dashed rounded-lg absolute top-6 -left-22 rotate-12 p-2 group-hover:top-4 transition-all">
-                          <p className="text-border text-sm font-mono text-center">
-                            Empty
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardHeader>
-                </Card>
-              </Link>
+                subject={subject}
+                relSubjectSemester={rel}
+                semester={semester}
+              />
             );
           })}
         </div>

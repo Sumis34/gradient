@@ -19,8 +19,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { useCollections } from "@/context/collection-context";
+import { IconBook2 } from "@tabler/icons-react";
 import { eq, useLiveQuery, and } from "@tanstack/react-db";
+import { PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { use, useState } from "react";
 
@@ -117,29 +127,50 @@ export default function Page({
         <div className="mb-3">
           <h2 className="text-lg font-semibold">Grades</h2>
         </div>
-        <div className="overflow-x-auto">
-          <Card className="divide-y py-2 flex flex-col gap-2">
-            <table>
-              <tbody>
-                {grades.map((grade) => (
-                  <tr key={grade.id} className="border-b last:border-b-0">
-                    <td className="py-2 align-middle w-32 pl-5">
-                      <span className="text-3xl">
-                        {decodeGrade(grade.grade)}
-                      </span>
-                    </td>
-                    <td className="align-middle">
-                      <div className="font-medium">{grade.description}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {new Date(grade.date).toLocaleDateString()}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </Card>
-        </div>
+        {grades.length === 0 && (
+          <Empty className="border border-dashed">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <IconBook2 />
+              </EmptyMedia>
+              <EmptyTitle>No Grades Yet</EmptyTitle>
+              <EmptyDescription>
+                Add grades to this subject to start tracking your progress.
+              </EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Button onClick={() => setIsAddGradeOpen(true)} size={"sm"}>
+                <PlusIcon />
+                Add Grade
+              </Button>
+            </EmptyContent>
+          </Empty>
+        )}
+        {grades.length > 0 && (
+          <div className="overflow-x-auto">
+            <Card className="divide-y py-2 flex flex-col gap-2">
+              <table>
+                <tbody>
+                  {grades.map((grade) => (
+                    <tr key={grade.id} className="border-b last:border-b-0">
+                      <td className="py-2 align-middle w-32 pl-5">
+                        <span className="text-3xl">
+                          {decodeGrade(grade.grade)}
+                        </span>
+                      </td>
+                      <td className="align-middle">
+                        <div className="font-medium">{grade.description}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {new Date(grade.date).toLocaleDateString()}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );
