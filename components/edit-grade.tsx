@@ -27,6 +27,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/lib/utils";
 import { Calendar } from "./ui/calendar";
 import { CalendarIcon } from "lucide-react";
+import { GradesDocType } from "@/lib/local-database/rxdb";
 
 const formSchema = z.object({
   grade: z.number().min(0).max(1000),
@@ -38,35 +39,47 @@ const formSchema = z.object({
 export function EditGradeForm({
   children,
   subjectId,
+  grade,
   afterSubmit,
 }: {
   children: React.ReactNode;
   subjectId: string;
+  grade?: GradesDocType;
   afterSubmit?: () => void;
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      description: "",
-      weight: 100,
-      date: new Date(),
-      grade: 5,
+      description: grade?.name || "",
+      weight: grade?.weight || 100,
+      date: grade ? new Date(grade.date) : new Date(),
+      grade: grade?.value || 5.0,
     },
   });
 
   const { grades } = useCollections();
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    const id = crypto.randomUUID();
+    const id = grades.id || crypto.randomUUID();
 
-    grades.insert({
-      id,
-      name: data.description,
-      value: data.grade,
-      weight: data.weight,
-      subject_id: subjectId,
-      date: new Date().toISOString(),
-    });
+    if (!grade) {
+      grades.insert({
+        id,
+        name: data.description,
+        value: data.grade,
+        weight: data.weight,
+        subject_id: subjectId,
+        date: data.date.toISOString(),
+      });
+    } else {
+      grades.update(grade.id, (draft) => {
+        draft.name = data.description;
+        draft.value = data.grade;
+        draft.weight = data.weight;
+        draft.date = data.date.toISOString();
+        return draft;
+      });
+    }
 
     afterSubmit?.();
   };

@@ -6,21 +6,16 @@ import { usePersistence } from "./persistence-context";
 import { assignUserId } from "../lib/local-database/utils";
 import { startReplication } from "@/lib/local-database/replication";
 
-//
-// --- Context Setup ---
-// Default to [] instead of null to avoid false errors in useReplication()
-//
+type ReplicationState = "disabled" | "idle" | "syncing" | "in_sync" | "error";
+
 const ReplicationContext = createContext<RxSupabaseReplicationState<any>[]>([]);
 
-//
-// --- Singleton Promise ---
-// Guarantees startReplication() runs exactly once per app session.
-//
 let replicationPromise: Promise<RxSupabaseReplicationState<any>[]> | null =
   null;
 
 function getReplicationPromise(
-  db: any, userId: string
+  db: any,
+  userId: string
 ): Promise<RxSupabaseReplicationState<any>[]> {
   if (replicationPromise) return replicationPromise;
 
@@ -46,10 +41,6 @@ function getReplicationPromise(
   return replicationPromise;
 }
 
-//
-// --- Provider Component ---
-// Handles user assignment + replication init only once.
-//
 export function ReplicationProvider({
   children,
 }: {

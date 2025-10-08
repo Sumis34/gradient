@@ -1,11 +1,11 @@
 "use client";
 
-import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import {
-  IconAd2,
-  IconNews,
-  IconSettingsCode,
-} from "@tabler/icons-react";
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+} from "@/components/ui/sidebar";
+import { IconAd2, IconNews, IconSettingsCode } from "@tabler/icons-react";
 import { LayoutDashboard, Package } from "lucide-react";
 import { NavCollapsible } from "@/components/nav-collapsible";
 import { NavFooter } from "@/components/nav-footer";
@@ -15,6 +15,7 @@ import type { SidebarData } from "./types";
 import { useAuth } from "@/hooks/use-auth";
 import { useCollections } from "@/context/collection-context";
 import { useLiveQuery } from "@tanstack/react-db";
+import Link from "next/link";
 
 const data: SidebarData = {
   navMain: [
@@ -23,7 +24,7 @@ const data: SidebarData = {
       title: "Dashboard",
       icon: LayoutDashboard,
       url: "/app",
-    }
+    },
   ],
   navCollapsible: {
     favorites: [
@@ -97,7 +98,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar {...props}>
-      <NavHeader data={data} />
+      <SidebarHeader>
+        <div className="px-2 pt-2 pb-20">
+          <Link href="/app">
+            <h1 className="font-serif font-semibold">Gradient</h1>
+          </Link>
+        </div>
+      </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavCollapsible
