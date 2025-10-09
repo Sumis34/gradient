@@ -20,6 +20,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Empty,
   EmptyContent,
   EmptyDescription,
@@ -30,8 +38,7 @@ import {
 import { useCollections } from "@/context/collection-context";
 import { IconBook2 } from "@tabler/icons-react";
 import { eq, useLiveQuery } from "@tanstack/react-db";
-import { PlusIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { PenIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { use } from "react";
 
 export default function SemesterPage({
@@ -67,14 +74,29 @@ export default function SemesterPage({
       <div>
         <div className="flex justify-between items-center my-4">
           <h1 className="capitalize">{semester.name}</h1>
-          <Button
-            variant={"destructive"}
-            onClick={async () => {
-              semestersCollection.delete(id);
-            }}
-          >
-            Delete Semester
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button variant={"secondary"} size="sm">
+                Options
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>
+                <PenIcon />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={async () => {
+                  semestersCollection.delete(id);
+                }}
+              >
+                <Trash2Icon />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         <div className="grid sm:grid-cols-3 gap-3">
           <Card>

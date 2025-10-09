@@ -31,7 +31,7 @@ export function NavCollapsible({
 }: NavCollapsibleProps) {
   return (
     <div className="space-y-0">
-      {favorites && favorites.length > 0 && (
+      {false && favorites.length > 0 && (
         <Collapsible defaultOpen className="group/collapsible">
           <SidebarGroup>
             <SidebarGroupLabel

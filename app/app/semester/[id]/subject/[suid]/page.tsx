@@ -27,18 +27,20 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { Progress } from "@/components/ui/progress";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useCollections } from "@/context/collection-context";
 import { GradesDocType } from "@/lib/local-database/rxdb";
 import { cn } from "@/lib/utils";
 import { IconBook2 } from "@tabler/icons-react";
 import { eq, useLiveQuery, and } from "@tanstack/react-db";
-import { PlusIcon } from "lucide-react";
+import { PenIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { use, useState } from "react";
 import GradeRow from "@/components/grade-row";
 
@@ -94,9 +96,8 @@ export default function Page({
     return current.value > best ? current.value : best;
   }, 0);
 
-  const worstGrade = grades?.reduce((worst, current) => {
-    return current.value < worst ? current.value : worst;
-  }, 6);
+  const worstGrade =
+    grades?.sort((a, b) => a.value - b.value).at(0)?.value ?? -1;
 
   const averageGrade =
     grades?.reduce(
@@ -115,7 +116,7 @@ export default function Page({
     },
     {
       name: "Worst Grade",
-      stat: worstGrade ? worstGrade.toFixed(2) : "N/A",
+      stat: worstGrade > -1 ? worstGrade.toFixed(2) : "N/A",
     },
   ];
 
@@ -123,6 +124,29 @@ export default function Page({
     <div className="px-5 space-y-5">
       <div className="flex justify-between items-center my-4">
         <h1>{subject?.name}</h1>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Button variant={"secondary"} size="sm">
+              Options
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem>
+              <PenIcon />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={async () => {
+                subjectsCollection.delete(suid);
+              }}
+            >
+              <Trash2Icon />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <dl className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 w-full">
         {stats.map((item) => (
@@ -203,7 +227,12 @@ export default function Page({
               <table>
                 <tbody>
                   {grades.map((grade) => (
-                    <GradeRow key={grade.id} grade={grade} subjectId={suid} decodeGrade={decodeGrade} />
+                    <GradeRow
+                      key={grade.id}
+                      grade={grade}
+                      subjectId={suid}
+                      decodeGrade={decodeGrade}
+                    />
                   ))}
                 </tbody>
               </table>

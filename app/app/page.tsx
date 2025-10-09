@@ -1,71 +1,17 @@
-"use client";
+"use client"
 
-import { useLiveQuery } from "@tanstack/react-db";
-import { useCollections } from "@/context/collection-context";
+import { AddSemesterDialog } from "@/components/semester-dialog";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/use-auth";
-import { usePersistence } from "@/context/persistence-context";
-import { useReplication } from "@/context/replication-context";
-import { useEffect } from "react";
+import { Card, CardDescription, CardHeader } from "@/components/ui/card";
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import { useCollections } from "@/context/collection-context";
+import { IconBook2 } from "@tabler/icons-react";
+import { useLiveQuery } from "@tanstack/react-db";
+import { PlusIcon } from "lucide-react";
+import Link from "next/link";
 
-export default function AppPage() {
-  const { grades, subjects, semesters } =
-    useCollections();
-  const { user } = useAuth();
-
-  const db = usePersistence();
-
-  const replications = useReplication();
-
-  useEffect(() => {
-    const sub = db.semesters.$.subscribe((ev) => {
-      console.log("event", ev);
-    });
-
-    return () => {
-      sub.unsubscribe();
-    };
-  }, [db]);
-
-  const analyzeReplications = () => {
-    console.log("Analyzing Replications: " + replications.length);
-    for (const r of replications) {
-      console.log("Replication Info:");
-      console.log("  Is Paused:", r.isPaused());
-      console.log("  Collection:", r.collection.name);
-      console.log("  Stopped:", r.isStopped());
-    }
-  };
-
-  const fetchDirectlyFromDb = async () => {
-    const allSemesters = await db.semesters.find().exec();
-    console.log("All semesters from direct DB query:", allSemesters);
-  };
-
-  const updateLastSemesterName = async () => {
-    const allSemesters = await db.semesters.find().exec();
-    if (allSemesters.length === 0) return;
-    const lastSemester = allSemesters[allSemesters.length - 1];
-   
-    await db.semesters.upsert({
-      id: lastSemester.id,
-      name: "Updated Name " + new Date().toISOString(),
-    })
-
-    console.log("Updated last semester:", lastSemester);
-  }
-
-  const { data: allGrades = [] } = useLiveQuery((q) =>
-    q.from({
-      grades: grades,
-    })
-  );
-
-  const { data: allSubjects = [] } = useLiveQuery((q) =>
-    q.from({
-      subjects: subjects,
-    })
-  );
+export default function HomePage() {
+  const { semesters } = useCollections();
 
   const { data: allSemesters = [] } = useLiveQuery((q) =>
     q.from({
@@ -73,65 +19,53 @@ export default function AppPage() {
     })
   );
 
-  console.log("All semesters from live query:", allSemesters);
-
   return (
-    <div>
-      <Button onClick={fetchDirectlyFromDb}>Fetch Directly From DB</Button>
-      <Button onClick={analyzeReplications}>Analyze Replications</Button>
-      <Button onClick={updateLastSemesterName}>Update Last Semester Name</Button>
-      <h1>Rel Subjects Semesters</h1>
-      <h1>Semesters</h1>
-      {allSemesters.map((s) => (
-        <div key={s.id}>
-          <p>ID: {s.id}</p>
-          <p>Name: {s.name}</p>
-          <p>Description: {s.description}</p>
+    <div className="px-5">
+      <div className="flex justify-between items-center my-4">
+        <h1>Semesters</h1>
+        <AddSemesterDialog>
+          <Button>Add Semester</Button>
+        </AddSemesterDialog>
+      </div>
+      {allSemesters.length > 0 && (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {allSemesters.map((semester) => (
+            <Link href={`/app/semester/${semester.id}`} key={semester.id}>
+              <Card>
+                <CardHeader>
+                  <h2 className="text-lg font-semibold capitalize">
+                    {semester.name}
+                  </h2>
+                  <CardDescription>
+                    {semester.description || "-"}
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+          ))}
         </div>
-      ))}
-      <h1>Subjects</h1>
-      {allSubjects.map((s) => (
-        <div key={s.id}>
-          <p>ID: {s.id}</p>
-          <p>Name: {s.name}</p>
-        </div>
-      ))}
-      <h1>Grades</h1>
-      {allGrades.map((g) => (
-        <div key={g.id}>
-          <p>ID: {g.id}</p>
-          <p>User: {g.user_id}</p>
-          <p>Subject: {g.subject_id}</p>
-          <p>Grade: {g.value}</p>
-          <p>Date: {g.date}</p>
-          <hr />
-        </div>
-      ))}
-      <Button
-        onClick={() => {
-          grades.insert({
-            id: crypto.randomUUID(),
-            user_id: user?.id,
-            subject_id: "496128eb-a35d-4400-b05a-aaea97bb2cfc",
-            value: Math.floor(Math.random() * 100),
-            date: new Date().toISOString(),
-          });
-        }}
-      >
-        Add
-      </Button>
-      <Button
-        onClick={() => {
-          semesters.insert({
-            id: crypto.randomUUID(),
-            user_id: user?.id,
-            name: "Semester " + (allSemesters.length + 1),
-            description: "Description " + (allSemesters.length + 1),
-          });
-        }}
-      >
-        Semester
-      </Button>
+      )}
+      {allSemesters.length === 0 && (
+        <Empty className="border border-dashed">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <IconBook2 />
+            </EmptyMedia>
+            <EmptyTitle>No Semesters Yet</EmptyTitle>
+            <EmptyDescription>
+              Add semesters to start tracking your grades.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <AddSemesterDialog>
+              <Button size={"sm"}>
+                <PlusIcon />
+                Add Semester
+              </Button>
+            </AddSemesterDialog>
+          </EmptyContent>
+        </Empty>
+      )}
     </div>
   );
 }
