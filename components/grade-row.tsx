@@ -67,7 +67,7 @@ export default function GradeRow({ grade, subjectId, decodeGrade }: Props) {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit">Add</Button>
+            <Button type="submit">{grade ? "Update" : "Add"}</Button>
           </DialogFooter>
         </EditGradeForm>
       </DialogContent>

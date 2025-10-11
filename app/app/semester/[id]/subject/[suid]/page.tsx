@@ -125,7 +125,7 @@ export default function Page({
       <div className="flex justify-between items-center my-4">
         <h1>{subject?.name}</h1>
         <DropdownMenu>
-          <DropdownMenuTrigger>
+          <DropdownMenuTrigger asChild>
             <Button variant={"secondary"} size="sm">
               Options
             </Button>

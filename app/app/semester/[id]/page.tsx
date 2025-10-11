@@ -75,7 +75,7 @@ export default function SemesterPage({
         <div className="flex justify-between items-center my-4">
           <h1 className="capitalize">{semester.name}</h1>
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild>
               <Button variant={"secondary"} size="sm">
                 Options
               </Button>
