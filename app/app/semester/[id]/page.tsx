@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/empty";
 import { useCollections } from "@/context/collection-context";
 import { IconBook2 } from "@tabler/icons-react";
-import { eq, useLiveQuery } from "@tanstack/react-db";
+import { avg, count, eq, max, min, useLiveQuery } from "@tanstack/react-db";
 import { PenIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { use } from "react";
 
@@ -48,14 +48,45 @@ export default function SemesterPage({
 }) {
   const { id } = use(params);
 
-  const { semesters: semestersCollection, subjects: subjectsCollection } =
-    useCollections();
+  const {
+    semesters: semestersCollection,
+    subjects: subjectsCollection,
+    grades: gradesCollection,
+  } = useCollections();
 
   const { data: semesters } = useLiveQuery((q) =>
     q
       .from({ semesters: semestersCollection })
       .where(({ semesters }) => eq(semesters.id, id))
   );
+
+  const { data: grades } = useLiveQuery((q) =>
+    q
+      .from({ grade: gradesCollection })
+      .innerJoin(
+        {
+          subject: subjectsCollection,
+        },
+        ({ grade, subject }) => eq(grade.subject_id, subject.id)
+      )
+      .innerJoin(
+        {
+          semester: semestersCollection,
+        },
+        ({ grade, subject, semester }) => eq(subject.semester_id, semester.id)
+      )
+      .where(({ semester }) => eq(semester.id, id))
+      .groupBy(({ semester }) => semester.id)
+      .select(({ grade }) => ({
+        count: count(grade.id),
+        avg: avg(grade.value),
+        min: min(grade.value),
+        max: max(grade.value),
+      }))
+  );
+
+  console.log(grades);
+  
 
   const { data: subjects } = useLiveQuery((q) =>
     q
