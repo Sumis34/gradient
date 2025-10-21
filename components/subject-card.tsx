@@ -37,7 +37,7 @@ export default function SubjectCard({
   const stack = Array(empty ? 1 : Math.min(gradesCount, 3)).fill(null);
 
   const average = weightedAverage(grades);
-  const formattedAverageGrade = average === 0 ? "0.0" : denormalize(average).toFixed(1);
+  const formattedAverageGrade = average === 0 ? "0.00" : denormalize(average).toFixed(2);
 
   const pass = average >= passingThreshold;
 

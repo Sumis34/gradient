@@ -62,7 +62,7 @@ export function EditGradeForm({
       description: grade?.name || "",
       weight: grade?.weight || 100,
       date: grade ? new Date(grade.date) : new Date(),
-      grade: grade?.value ? denormalize(grade.value) : 5.0,
+      grade: grade?.value !== undefined ? denormalize(grade.value) : 5.0, // explicitly check if undefined, as 0 is a valid grade
     },
   });
 

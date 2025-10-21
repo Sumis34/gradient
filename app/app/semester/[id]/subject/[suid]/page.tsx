@@ -98,7 +98,9 @@ export default function Page({
   const worstGrade = worst(grades);
   const bestGrade = best(grades);
 
-  const formattedAverageGrade = averageGrade ? denormalize(averageGrade) : "N/A";
+  const formattedAverageGrade = averageGrade
+    ? denormalize(averageGrade)
+    : "N/A";
   const formattedBestGrade = bestGrade ? denormalize(bestGrade) : "N/A";
   const formattedWorstGrade = worstGrade ? denormalize(worstGrade) : "N/A";
 
@@ -176,7 +178,10 @@ export default function Page({
           <h2 className="text-lg font-semibold">Grades</h2>
           <Dialog open={isAddGradeOpen} onOpenChange={setIsAddGradeOpen}>
             <DialogTrigger asChild>
-              <Button size={"sm"}>Add Grade</Button>
+              <Button size={"sm"}>
+                <PlusIcon />
+                Add Grade
+              </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
