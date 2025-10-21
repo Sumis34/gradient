@@ -30,6 +30,7 @@ import {
   Settings,
   User,
 } from "lucide-react";
+import SyncState from "./sync-state";
 
 export function NavFooter({
   user,
@@ -44,6 +45,7 @@ export function NavFooter({
 
   return (
     <SidebarFooter className="p-4">
+      <SyncState state="no-sync" />
       <SidebarMenu>
         <SidebarMenuItem>
           <div className="flex items-center gap-2 justify-between">

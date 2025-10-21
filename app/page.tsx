@@ -7,7 +7,7 @@ export default function Home() {
     <div className="p-5">
       <header className="min-h-screen flex items-center justify-center flex-col">
         <h1 className="text-5xl sm:text-6xl font-serif capitalize text-center">
-          Grades made brutal and clear.
+          Grades made brutally and clear.
         </h1>
         <p className="text-xl text-muted-foreground mt-4 max-w-lg font-semibold text-center w-full">
           See what{"'"}s killing your average, where to fight back, and what you
