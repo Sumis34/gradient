@@ -17,7 +17,7 @@ const weightedAverage = (normalizedGrades: MinimalGrade[]): number => {
     (sum, current) => sum + (current.weight ?? 0),
     0
   );
-  
+
   if (totalWeight === 0) return 0;
 
   return (

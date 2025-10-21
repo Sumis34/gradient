@@ -14,13 +14,11 @@ type DenormalizerFn = (
   normalizedGrade: number,
   inMin?: number,
   inMax?: number
-) => number | string;
+) => number;
 
 interface Format {
   name: string;
-  best: number | string;
-  worst: number | string;
-  passingThreshold: number | string;
+  passingThreshold: number;
   inputSchema: z.ZodNumber | z.ZodString;
   normalize: NormalizerFn;
   denormalize: DenormalizerFn;
@@ -41,9 +39,7 @@ const denormalizeOneToSix = (
 const FORMATS: Record<FormatTypes, Format> = {
   [FormatTypes.ONE_TO_SIX]: {
     name: "1-6",
-    best: 6,
-    worst: 1,
-    passingThreshold: 4,
+    passingThreshold: 0.6,
     inputSchema: z.number().min(1).max(6),
     normalize: (grade, ...args) => {
       if (typeof grade !== "number") {
@@ -52,9 +48,10 @@ const FORMATS: Record<FormatTypes, Format> = {
       return normalizeOneToSix(grade as number, ...args);
     },
     denormalize: (normalizedGrade, ...args) => {
-      const grade = denormalizeOneToSix(normalizedGrade, ...args)
-      return Math.round(grade * 100) / 100;
-    }
+      const grade = denormalizeOneToSix(normalizedGrade, ...args);
+      const rounded = Math.round(grade * 100) / 100;
+      return rounded;
+    },
   },
 };
 
