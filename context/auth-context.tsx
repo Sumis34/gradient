@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
+import { FormatTypes } from "@/lib/grades/formats";
 
 interface AuthContextType {
   user: User | null; // User info (name, email, etc.)
@@ -9,6 +10,7 @@ interface AuthContextType {
   loading: boolean; // Is the app still checking if the user is logged in?
   signIn: (provider: "google" | "apple") => Promise<void>; // Function to sign in
   signOut: () => Promise<void>; // Function to sign out
+  defaultGradeFormat: FormatTypes;
 }
 // Create the context
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -62,7 +64,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
   // Share the data with the rest of the app
   return (
-    <AuthContext.Provider value={{ user, session, loading, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        loading,
+        signIn,
+        signOut,
+        defaultGradeFormat: FormatTypes.ONE_TO_SIX,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

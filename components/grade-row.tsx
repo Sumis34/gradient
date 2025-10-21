@@ -13,16 +13,17 @@ import {
 } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { DenormalizerFn, NormalizerFn } from "@/lib/grades/formats";
 import { GradesDocType } from "@/lib/local-database/rxdb";
 import React, { useState } from "react";
 
 type Props = {
   grade: GradesDocType;
   subjectId: string;
-  decodeGrade?(value: number): React.ReactNode;
+  formatGrade: DenormalizerFn
 };
 
-export default function GradeRow({ grade, subjectId, decodeGrade }: Props) {
+export default function GradeRow({ grade, subjectId, formatGrade }: Props) {
   const [isEditGradeOpen, setIsEditGradeOpen] = useState(false);
 
   const multiplier = Math.round(((grade.weight ?? 0) as number) / 100);
@@ -47,7 +48,7 @@ export default function GradeRow({ grade, subjectId, decodeGrade }: Props) {
             </Tooltip>
           </td>
           <td className="align-middle w-32 pl-5 h-14">
-            <span className="text-3xl">{decodeGrade ? decodeGrade(grade.value) : grade.value}</span>
+            <span className="text-3xl">{formatGrade(grade.value)}</span>
           </td>
           <td className="align-middle pl-5 h-14">
             <div className="font-medium">{grade.name}</div>

@@ -43,6 +43,8 @@ import { eq, useLiveQuery, and } from "@tanstack/react-db";
 import { PenIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { use, useState } from "react";
 import GradeRow from "@/components/grade-row";
+import useGradeFormat from "@/hooks/use-grade-formats";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Page({
   params,
@@ -52,6 +54,10 @@ export default function Page({
   const { id, suid } = use(params);
   const [isAddGradeOpen, setIsAddGradeOpen] = useState(false);
   const [isEditGradeOpen, setIsEditGradeOpen] = useState(false);
+
+  const { defaultGradeFormat } = useAuth();
+
+  const { denormalize } = useGradeFormat(defaultGradeFormat);
 
   const { subjects: subjectsCollection, grades: gradesCollection } =
     useCollections();
@@ -87,10 +93,6 @@ export default function Page({
         })),
     [suid]
   );
-
-  const decodeGrade = (grade: number) => {
-    return grade;
-  };
 
   const bestGrade = grades?.reduce((best, current) => {
     return current.value > best ? current.value : best;
@@ -231,7 +233,7 @@ export default function Page({
                       key={grade.id}
                       grade={grade}
                       subjectId={suid}
-                      decodeGrade={decodeGrade}
+                      formatGrade={denormalize}
                     />
                   ))}
                 </tbody>

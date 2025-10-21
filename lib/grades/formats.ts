@@ -4,22 +4,26 @@ enum FormatTypes {
   ONE_TO_SIX = "oneToSix",
 }
 
+type NormalizerFn = (
+  grade: number | string,
+  outMin?: number,
+  outMax?: number
+) => number;
+
+type DenormalizerFn = (
+  normalizedGrade: number,
+  inMin?: number,
+  inMax?: number
+) => number | string;
+
 interface Format {
   name: string;
   best: number | string;
   worst: number | string;
   passingThreshold: number | string;
   inputSchema: z.ZodNumber | z.ZodString;
-  normalize: (
-    grade: number | string,
-    outMin?: number,
-    outMax?: number
-  ) => number;
-  denormalize: (
-    normalizedGrade: number,
-    inMin?: number,
-    inMax?: number
-  ) => number | string;
+  normalize: NormalizerFn;
+  denormalize: DenormalizerFn;
 }
 
 const normalizeOneToSix = (grade: number, outMin = 0, outMax = 1): number => {
@@ -51,4 +55,4 @@ const FORMATS: Record<FormatTypes, Format> = {
   },
 };
 
-export { FormatTypes, FORMATS };
+export { FormatTypes, FORMATS, type NormalizerFn, type DenormalizerFn };
