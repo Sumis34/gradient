@@ -69,7 +69,7 @@ export function EditGradeForm({
   const { grades } = useCollections();
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    const id = grades.id || crypto.randomUUID();
+    const id = grade?.id || crypto.randomUUID();
 
     if (!grade) {
       grades.insert({
