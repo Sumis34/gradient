@@ -28,9 +28,10 @@ import { cn } from "@/lib/utils";
 import { Calendar } from "./ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { GradesDocType } from "@/lib/local-database/rxdb";
+import { useAuth } from "@/hooks/use-auth";
+import useGradeFormat from "@/hooks/use-grade-formats";
 
-const formSchema = z.object({
-  grade: z.number().min(0).max(1000),
+const baseSchema = z.object({
   description: z.string().max(500).min(1),
   weight: z.number().min(0),
   date: z.date(),
@@ -47,13 +48,21 @@ export function EditGradeForm({
   grade?: GradesDocType;
   afterSubmit?: () => void;
 }) {
+  const { defaultGradeFormat } = useAuth();
+  const { normalize, denormalize, inputSchema } =
+    useGradeFormat(defaultGradeFormat);
+
+  const formSchema = baseSchema.extend({
+    grade: inputSchema,
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       description: grade?.name || "",
       weight: grade?.weight || 100,
       date: grade ? new Date(grade.date) : new Date(),
-      grade: grade?.value || 5.0,
+      grade: grade?.value ? denormalize(grade.value) : 5.0,
     },
   });
 
@@ -66,7 +75,7 @@ export function EditGradeForm({
       grades.insert({
         id,
         name: data.description,
-        value: data.grade,
+        value: normalize(data.grade),
         weight: data.weight,
         subject_id: subjectId,
         date: data.date.toISOString(),
@@ -74,7 +83,7 @@ export function EditGradeForm({
     } else {
       grades.update(grade.id, (draft) => {
         draft.name = data.description;
-        draft.value = data.grade;
+        draft.value = normalize(data.grade);
         draft.weight = data.weight;
         draft.date = data.date.toISOString();
         return draft;
