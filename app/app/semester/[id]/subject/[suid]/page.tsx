@@ -45,6 +45,7 @@ import { use, useState } from "react";
 import GradeRow from "@/components/grade-row";
 import useGradeFormat from "@/hooks/use-grade-formats";
 import { useAuth } from "@/hooks/use-auth";
+import { best, weightedAverage, worst } from "@/lib/grades/aggregation";
 
 export default function Page({
   params,
@@ -53,7 +54,6 @@ export default function Page({
 }) {
   const { id, suid } = use(params);
   const [isAddGradeOpen, setIsAddGradeOpen] = useState(false);
-  const [isEditGradeOpen, setIsEditGradeOpen] = useState(false);
 
   const { defaultGradeFormat } = useAuth();
 
@@ -94,31 +94,26 @@ export default function Page({
     [suid]
   );
 
-  const bestGrade = grades?.reduce((best, current) => {
-    return current.value > best ? current.value : best;
-  }, 0);
+  const averageGrade = weightedAverage(grades);
+  const worstGrade = worst(grades);
+  const bestGrade = best(grades);
 
-  const worstGrade =
-    grades?.sort((a, b) => a.value - b.value).at(0)?.value ?? -1;
-
-  const averageGrade =
-    grades?.reduce(
-      (sum, current) => sum + current.value * ((current.weight ?? 0) / 100),
-      0
-    ) / grades.length;
+  const formattedAverageGrade = averageGrade ? denormalize(averageGrade) : "N/A";
+  const formattedBestGrade = bestGrade ? denormalize(bestGrade) : "N/A";
+  const formattedWorstGrade = worstGrade ? denormalize(worstGrade) : "N/A";
 
   const stats = [
     {
       name: "Average",
-      stat: averageGrade ? averageGrade.toFixed(2) : "N/A",
+      stat: formattedAverageGrade,
     },
     {
       name: "Best Grade",
-      stat: bestGrade ? bestGrade.toFixed(2) : "N/A",
+      stat: formattedBestGrade,
     },
     {
       name: "Worst Grade",
-      stat: worstGrade > -1 ? worstGrade.toFixed(2) : "N/A",
+      stat: formattedWorstGrade,
     },
   ];
 
@@ -150,7 +145,7 @@ export default function Page({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <dl className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 w-full">
+      <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 w-full">
         {stats.map((item) => (
           <Card key={item.name} className="p-6 py-4">
             <CardContent className="p-0">

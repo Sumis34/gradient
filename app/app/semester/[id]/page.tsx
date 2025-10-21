@@ -36,6 +36,9 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { useCollections } from "@/context/collection-context";
+import { useAuth } from "@/hooks/use-auth";
+import useGradeFormat from "@/hooks/use-grade-formats";
+import { best, weightedAverage, worst } from "@/lib/grades/aggregation";
 import { IconBook2 } from "@tabler/icons-react";
 import { avg, count, eq, max, min, useLiveQuery } from "@tanstack/react-db";
 import { PenIcon, PlusIcon, Trash2Icon } from "lucide-react";
@@ -47,6 +50,8 @@ export default function SemesterPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const { defaultGradeFormat } = useAuth();
+  const { denormalize } = useGradeFormat(defaultGradeFormat);
 
   const {
     semesters: semestersCollection,
@@ -73,20 +78,14 @@ export default function SemesterPage({
         {
           semester: semestersCollection,
         },
-        ({ grade, subject, semester }) => eq(subject.semester_id, semester.id)
+        ({ subject, semester }) => eq(subject.semester_id, semester.id)
       )
       .where(({ semester }) => eq(semester.id, id))
-      .groupBy(({ semester }) => semester.id)
       .select(({ grade }) => ({
-        count: count(grade.id),
-        avg: avg(grade.value),
-        min: min(grade.value),
-        max: max(grade.value),
+        value: grade.value,
+        weight: grade.weight,
       }))
   );
-
-  console.log(grades);
-  
 
   const { data: subjects } = useLiveQuery((q) =>
     q
@@ -99,6 +98,31 @@ export default function SemesterPage({
   if (!semester || !subjects) {
     return <></>;
   }
+
+  const averageGrade = weightedAverage(grades);
+  const worstGrade = worst(grades);
+  const bestGrade = best(grades);
+
+  const formattedAverageGrade = averageGrade
+    ? denormalize(averageGrade)
+    : "N/A";
+  const formattedBestGrade = bestGrade ? denormalize(bestGrade) : "N/A";
+  const formattedWorstGrade = worstGrade ? denormalize(worstGrade) : "N/A";
+
+  const stats = [
+    {
+      name: "Average",
+      stat: formattedAverageGrade,
+    },
+    {
+      name: "Best Grade",
+      stat: formattedBestGrade,
+    },
+    {
+      name: "Worst Grade",
+      stat: formattedWorstGrade,
+    },
+  ];
 
   return (
     <div className="px-5 space-y-5">
@@ -129,20 +153,22 @@ export default function SemesterPage({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="grid sm:grid-cols-3 gap-3">
-          <Card>
-            <CardHeader></CardHeader>
-            <CardContent></CardContent>
-          </Card>
-          <Card>
-            <CardHeader></CardHeader>
-            <CardContent></CardContent>
-          </Card>
-          <Card>
-            <CardHeader></CardHeader>
-            <CardContent></CardContent>
-          </Card>
-        </div>
+        <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 w-full">
+          {stats.map((item) => (
+            <Card key={item.name} className="p-6 py-4">
+              <CardContent className="p-0">
+                <dt className="text-sm font-medium text-muted-foreground">
+                  {item.name}
+                </dt>
+                <dd className="mt-2 flex items-baseline space-x-2.5">
+                  <span className="text-3xl font-semibold text-foreground">
+                    {item.stat}
+                  </span>
+                </dd>
+              </CardContent>
+            </Card>
+          ))}
+        </dl>
       </div>
       <div>
         <Dialog>

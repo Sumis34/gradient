@@ -51,7 +51,10 @@ const FORMATS: Record<FormatTypes, Format> = {
       }
       return normalizeOneToSix(grade as number, ...args);
     },
-    denormalize: denormalizeOneToSix,
+    denormalize: (normalizedGrade, ...args) => {
+      const grade = denormalizeOneToSix(normalizedGrade, ...args)
+      return Math.round(grade * 100) / 100;
+    }
   },
 };
 
