@@ -45,7 +45,7 @@ export function NavFooter({
 
   return (
     <SidebarFooter className="p-4">
-      <SyncState state="no-sync" />
+      <SyncState state="synced" />
       <SidebarMenu>
         <SidebarMenuItem>
           <div className="flex items-center gap-2 justify-between">
