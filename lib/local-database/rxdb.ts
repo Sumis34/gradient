@@ -12,11 +12,13 @@ import {
 } from "rxdb/plugins/core";
 import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
 import { wrappedValidateAjvStorage } from "rxdb/plugins/validate-ajv";
-import { RxDBDevModePlugin } from "rxdb/plugins/dev-mode";
+import { disableWarnings, RxDBDevModePlugin } from "rxdb/plugins/dev-mode";
 
 if (process.env.NODE_ENV === "development") {
   addRxPlugin(RxDBDevModePlugin);
 }
+
+disableWarnings()
 
 // ---- Schema ----
 const gradesSchemaLiteral = {

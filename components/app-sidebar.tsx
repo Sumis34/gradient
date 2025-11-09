@@ -115,11 +115,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         />
       </SidebarContent>
       <NavFooter
-        user={{
-          name: user?.user_metadata?.name || "Guest User",
-          email: user?.email || "",
-          avatar: user?.user_metadata?.avatar_url,
-        }}
+        user={
+          user
+            ? {
+                name: user?.user_metadata?.name || "Guest User",
+                email: user?.email || "",
+                avatar: user?.user_metadata?.avatar_url,
+              }
+            : undefined
+        }
       />
     </Sidebar>
   );

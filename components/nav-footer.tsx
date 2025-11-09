@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,11 +31,12 @@ import {
   User,
 } from "lucide-react";
 import SyncState from "./sync-state";
+import Link from "next/link";
 
 export function NavFooter({
   user,
 }: {
-  user: {
+  user?: {
     name: string;
     email: string;
     avatar: string;
@@ -45,41 +46,56 @@ export function NavFooter({
 
   return (
     <SidebarFooter className="p-4">
-      <SyncState state="synced" />
+      <SyncState state={user ? "synced" : "no-sync"} />
       <SidebarMenu>
         <SidebarMenuItem>
           <div className="flex items-center gap-2 justify-between">
             <div className="flex items-center gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Avatar className="h-8 w-8 rounded-full">
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback className="rounded-full">CN</AvatarFallback>
-                  </Avatar>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="m-2">
-                  <DropdownMenuItem>
-                    <User size={16} className="opacity-80" aria-hidden="true" />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Settings
-                      size={16}
-                      className="opacity-80"
-                      aria-hidden="true"
-                    />
-                    Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => signOut()}>
-                    <LogOut
-                      size={16}
-                      className="opacity-80"
-                      aria-hidden="true"
-                    />
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="h-8 w-8 rounded-full">
+                      <AvatarImage src={user?.avatar} alt={user?.name} />
+                      <AvatarFallback className="rounded-full">
+                        CN
+                      </AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="m-2">
+                    <DropdownMenuItem>
+                      <User
+                        size={16}
+                        className="opacity-80"
+                        aria-hidden="true"
+                      />
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Settings
+                        size={16}
+                        className="opacity-80"
+                        aria-hidden="true"
+                      />
+                      Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => signOut()}>
+                      <LogOut
+                        size={16}
+                        className="opacity-80"
+                        aria-hidden="true"
+                      />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Link
+                  href="/login"
+                  className={buttonVariants({ size: "sm", variant: "default" })}
+                >
+                  Sign In and Sync
+                </Link>
+              )}
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

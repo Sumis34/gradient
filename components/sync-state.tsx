@@ -26,7 +26,7 @@ export default function SyncState({
         {state === "error" && "There was an error syncing data"}
       </p>
       {state === "synced" && (
-        <div className="absolute -bottom-2 left-0 w-6 h-6 bg-green-300 rounded-full blur-xl"></div>
+        <div className="absolute left-0 w-12 h-6 bg-green-300 rounded-full blur-2xl"></div>
       )}
     </div>
   );
