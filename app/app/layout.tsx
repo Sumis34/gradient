@@ -1,18 +1,11 @@
 "use client";
 import { AppSidebar } from "@/components/app-sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import SetupForm from "@/components/setup-dialog";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   SidebarInset,
   SidebarProvider,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { Book, House, Plus } from "lucide-react";
@@ -44,6 +37,14 @@ export default function Layout({
             </div>
           </div>
         </SidebarInset>
+        <Dialog open={true}>
+          <DialogHeader>
+            <DialogTitle>Setup Form</DialogTitle>
+          </DialogHeader>
+          <DialogContent>
+            <SetupForm />
+          </DialogContent>
+        </Dialog>
       </SidebarProvider>
     </>
   );

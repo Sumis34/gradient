@@ -43,7 +43,7 @@ export default function Layout({
     label: string;
     href: string;
     as?: string;
-  }[] = [{ label: "Semesters", href: "/app/semester" }];
+  }[] = [{ label: "Dashboard", href: "/app" }];
 
   if (semesters && semesters.at(0)) {
     crumbs.push({
