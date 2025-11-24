@@ -14,8 +14,14 @@ import {
   FieldTitle,
 } from "./ui/field";
 import { Button } from "./ui/button";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SetupForm() {
+  const [choice, setChoice] = useState<string>("sync");
+
+  const router = useRouter();
+
   return (
     <div>
       <div className="text-center p-10">
@@ -26,11 +32,12 @@ export default function SetupForm() {
         </p>
       </div>
       <RadioGroup
-        defaultValue="option-one"
+        defaultValue="sync"
+        onValueChange={(value) => setChoice(value)}
         className="border divide-y rounded-lg gap-0"
       >
         <RadioGroupItem
-          value="option-one"
+          value="sync"
           className="flex items-center space-x-5 p-4 text-left"
         >
           <div className="border p-3 bg-card rounded-lg">
@@ -51,7 +58,7 @@ export default function SetupForm() {
           </data>
         </RadioGroupItem>
         <RadioGroupItem
-          value="option-two"
+          value="local"
           className="flex items-center space-x-5 p-4 text-left"
         >
           <div className="border p-3 bg-card rounded-lg">
@@ -73,7 +80,22 @@ export default function SetupForm() {
           </data>
         </RadioGroupItem>
       </RadioGroup>
-      <Button className="mt-6 w-full">Continue</Button>
+      <Button
+        className="mt-6 w-full"
+        onClick={() => {
+          if (choice === "sync") {
+            router.push("/login");
+          }
+
+          if (choice === "local") {
+            router.push("/app");
+          }
+
+          localStorage.setItem("settings/storage", choice);
+        }}
+      >
+        Continue
+      </Button>
     </div>
   );
 }
