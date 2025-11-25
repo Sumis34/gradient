@@ -3,21 +3,13 @@ import { Label } from "./ui/label";
 import { RadioGroup } from "./ui/radio-group";
 import {
   Indicator,
-  RadioGroupIndicator,
   RadioGroupItem,
 } from "@radix-ui/react-radio-group";
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldLabel,
-  FieldTitle,
-} from "./ui/field";
 import { Button } from "./ui/button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function SetupForm() {
+export default function SetupForm({ onComplete }: { onComplete?: () => void }) {
   const [choice, setChoice] = useState<string>("sync");
 
   const router = useRouter();
@@ -45,7 +37,10 @@ export default function SetupForm() {
           </div>
           <div>
             <Label htmlFor="option-two" className="mb-1">
-              Sync across devices
+              Sync across devices{" "}
+              <span className="rounded-sm bg-primary/10 text-primary px-2 py-0.5 text-xs border border-primary">
+                Recommended
+              </span>
             </Label>
             <p className="text-muted-foreground text-sm">
               Your grades are saved to your account and synced across devices.
@@ -70,7 +65,7 @@ export default function SetupForm() {
             </Label>
             <p className="text-muted-foreground text-sm">
               All your data is stored locally on this device and will not be
-              synced.
+              synced. No login required.
             </p>
           </div>
           <data className="border-input text-primary flex items-center justify-center aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none disabled:cursor-not-allowed disabled:opacity-50">
@@ -92,6 +87,7 @@ export default function SetupForm() {
           }
 
           localStorage.setItem("settings/storage", choice);
+          onComplete?.();
         }}
       >
         Continue

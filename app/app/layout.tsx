@@ -54,7 +54,7 @@ export default function Layout({
             <DialogTitle>Setup Form</DialogTitle>
           </DialogHeader>
           <DialogContent>
-            <SetupForm />
+            <SetupForm onComplete={() => setShowSetup(false)} />
           </DialogContent>
         </Dialog>
       </SidebarProvider>
