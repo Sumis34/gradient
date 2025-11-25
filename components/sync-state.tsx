@@ -10,6 +10,7 @@ export default function SyncState({
     <div
       className={cn(
         state === "no-sync" && "",
+        state === "synced" && "",
         "px-3 py-2 rounded-md text-sm flex items-center gap-1 relative overflow-hidden border bg-muted text-muted-foreground"
       )}
     >

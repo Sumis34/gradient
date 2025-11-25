@@ -11,6 +11,7 @@ import {
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { Book, House, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Layout({
@@ -19,15 +20,20 @@ export default function Layout({
   children: React.ReactNode;
 }>) {
   const [showSetup, setShowSetup] = useState(true);
-
-  useAuth();
+  const { user } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     const isSetup = localStorage.getItem("settings/storage");
+
     if (isSetup) {
       setShowSetup(false);
     }
-  }, []);
+
+    if (isSetup === "sync" && !user) {
+      router.push("/login");
+    }
+  }, [user]);
 
   return (
     <>

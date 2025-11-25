@@ -62,22 +62,6 @@ export function NavFooter({
                     </Avatar>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="m-2">
-                    <DropdownMenuItem>
-                      <User
-                        size={16}
-                        className="opacity-80"
-                        aria-hidden="true"
-                      />
-                      Profile
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Settings
-                        size={16}
-                        className="opacity-80"
-                        aria-hidden="true"
-                      />
-                      Settings
-                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => signOut()}>
                       <LogOut
                         size={16}
@@ -97,7 +81,7 @@ export function NavFooter({
                 </Link>
               )}
             </div>
-            <DropdownMenu>
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   size="icon"
@@ -135,7 +119,7 @@ export function NavFooter({
                   Add Integration
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
           </div>
         </SidebarMenuItem>
       </SidebarMenu>
