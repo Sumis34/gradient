@@ -1,10 +1,7 @@
 import { CircleIcon, Cloud, Phone, Smartphone } from "lucide-react";
 import { Label } from "./ui/label";
 import { RadioGroup } from "./ui/radio-group";
-import {
-  Indicator,
-  RadioGroupItem,
-} from "@radix-ui/react-radio-group";
+import { Indicator, RadioGroupItem } from "@radix-ui/react-radio-group";
 import { Button } from "./ui/button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";

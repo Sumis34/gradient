@@ -50,10 +50,8 @@ export default function Layout({
           </div>
         </SidebarInset>
         <Dialog open={showSetup}>
-          <DialogHeader>
-            <DialogTitle>Setup Form</DialogTitle>
-          </DialogHeader>
-          <DialogContent>
+          <DialogContent showCloseButton={false}>
+            <DialogTitle></DialogTitle>
             <SetupForm onComplete={() => setShowSetup(false)} />
           </DialogContent>
         </Dialog>
