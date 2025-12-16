@@ -1,6 +1,7 @@
 "use client";
 
 import { EditSubjectForm } from "@/components/edit-subject";
+import GradeDisplay from "@/components/grade-display";
 import SubjectCard from "@/components/subject-card";
 import { Button } from "@/components/ui/button";
 import {
@@ -51,7 +52,7 @@ export default function SemesterPage({
 }) {
   const { id } = use(params);
   const { defaultGradeFormat } = useAuth();
-  const { denormalize } = useGradeFormat(defaultGradeFormat);
+  const { denormalize, passingThreshold } = useGradeFormat(defaultGradeFormat);
 
   const {
     semesters: semestersCollection,
@@ -104,23 +105,27 @@ export default function SemesterPage({
   const bestGrade = best(grades);
 
   const formattedAverageGrade = averageGrade
-    ? denormalize(averageGrade)
+    ? denormalize(averageGrade).toFixed(2)
     : "N/A";
-  const formattedBestGrade = bestGrade ? denormalize(bestGrade) : "N/A";
-  const formattedWorstGrade = worstGrade ? denormalize(worstGrade) : "N/A";
+  const formattedBestGrade = bestGrade ? denormalize(bestGrade).toFixed(2) : "N/A";
+  const formattedWorstGrade = worstGrade ? denormalize(worstGrade).toFixed(2) : "N/A";
 
   const stats = [
     {
       name: "Average",
       stat: formattedAverageGrade,
+      rawValue: averageGrade,
+      highlight: true,
     },
     {
       name: "Best Grade",
       stat: formattedBestGrade,
+      rawValue: bestGrade,
     },
     {
       name: "Worst Grade",
       stat: formattedWorstGrade,
+      rawValue: worstGrade,
     },
   ];
 
@@ -160,10 +165,17 @@ export default function SemesterPage({
                 <dt className="text-sm font-medium text-muted-foreground">
                   {item.name}
                 </dt>
-                <dd className="mt-2 flex items-baseline space-x-2.5">
-                  <span className="text-3xl font-semibold text-foreground">
-                    {item.stat}
-                  </span>
+                <dd className="mt-2 flex items-baseline space-x-2.5 text-3xl">
+                  <GradeDisplay
+                    formattedAverageGrade={item.stat}
+                    state={
+                      item.highlight
+                        ? item.rawValue ?? 0 >= passingThreshold
+                          ? "pass"
+                          : "fail"
+                        : "empty"
+                    }
+                  />
                 </dd>
               </CardContent>
             </Card>

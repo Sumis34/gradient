@@ -46,6 +46,8 @@ import GradeRow from "@/components/grade-row";
 import useGradeFormat from "@/hooks/use-grade-formats";
 import { useAuth } from "@/hooks/use-auth";
 import { best, weightedAverage, worst } from "@/lib/grades/aggregation";
+import { hi } from "date-fns/locale";
+import GradeDisplay from "@/components/grade-display";
 
 export default function Page({
   params,
@@ -57,7 +59,7 @@ export default function Page({
 
   const { defaultGradeFormat } = useAuth();
 
-  const { denormalize } = useGradeFormat(defaultGradeFormat);
+  const { denormalize, passingThreshold } = useGradeFormat(defaultGradeFormat);
 
   const { subjects: subjectsCollection, grades: gradesCollection } =
     useCollections();
@@ -99,23 +101,27 @@ export default function Page({
   const bestGrade = best(grades);
 
   const formattedAverageGrade = averageGrade
-    ? denormalize(averageGrade)
+    ? denormalize(averageGrade).toFixed(2)
     : "N/A";
-  const formattedBestGrade = bestGrade ? denormalize(bestGrade) : "N/A";
-  const formattedWorstGrade = worstGrade ? denormalize(worstGrade) : "N/A";
+  const formattedBestGrade = bestGrade ? denormalize(bestGrade).toFixed(2) : "N/A";
+  const formattedWorstGrade = worstGrade ? denormalize(worstGrade).toFixed(2) : "N/A";
 
   const stats = [
     {
       name: "Average",
       stat: formattedAverageGrade,
+      rawValue: averageGrade,
+      highlight: true,
     },
     {
       name: "Best Grade",
       stat: formattedBestGrade,
+      rawValue: bestGrade,
     },
     {
       name: "Worst Grade",
       stat: formattedWorstGrade,
+      rawValue: worstGrade,
     },
   ];
 
@@ -154,10 +160,13 @@ export default function Page({
               <dt className="text-sm font-medium text-muted-foreground">
                 {item.name}
               </dt>
-              <dd className="mt-2 flex items-baseline space-x-2.5">
-                <span className="text-3xl font-semibold text-foreground">
-                  {item.stat}
-                </span>
+              <dd className="mt-2 flex items-baseline space-x-2.5 text-3xl">
+                <GradeDisplay
+                  formattedAverageGrade={item.stat}
+                  state={
+                    item.highlight ? (item.rawValue ?? 0 >= passingThreshold ? "pass" : "fail") : "empty"
+                  }
+                />
                 {/* <span
                   className={cn(
                     item.changeType === "positive"
