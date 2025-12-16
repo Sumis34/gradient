@@ -20,7 +20,7 @@ export function LoginForm({
     await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `http://localhost:3000/app`,
+        redirectTo: `${window.location.origin}/app`,
       },
     })
   }
