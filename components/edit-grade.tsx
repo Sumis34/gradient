@@ -60,7 +60,7 @@ export function EditGradeForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       description: grade?.name || "",
-      weight: grade?.weight || 100,
+      weight: grade?.weight === undefined ? 100 : grade.weight, 
       date: grade ? new Date(grade.date) : new Date(),
       grade: grade?.value !== undefined ? denormalize(grade.value) : 5.0, // explicitly check if undefined, as 0 is a valid grade
     },
@@ -150,11 +150,15 @@ export function EditGradeForm({
                         type="number"
                         inputMode="numeric"
                         {...field}
-                        onChange={(e) =>
-                          parseFloat(e.target.value)
-                            ? field.onChange(parseInt(e.target.value))
-                            : field.onChange("")
-                        }
+                        onChange={(e) => {
+                          const weight = parseInt(e.target.value);
+
+                          if (isNaN(weight)) {
+                            return field.onChange("");
+                          }
+
+                          field.onChange(weight);
+                        }}
                       />
                       <InputGroupAddon align="inline-end">
                         <InputGroupText>%</InputGroupText>
